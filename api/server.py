@@ -16,7 +16,7 @@ from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import APIKeyHeader
-from groq import Groq
+import anthropic as anthropic_sdk
 from pydantic import BaseModel, Field
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -118,10 +118,10 @@ class ChatRequest(BaseModel):
 
 
 SYSTEM_PROMPT = (
-    "You are a helpful AI assistant called Sugan AI. "
-    "The user is chatting with you in English. Respond helpfully and naturally. "
-    "Keep replies concise (2-4 sentences for casual messages, longer for detailed questions). "
-    "Your response will be translated to Somali for the user."
+    "You are Sugan AI, a helpful and friendly AI assistant. "
+    "The user writes to you in English. Always respond in Somali (Af-Soomaali). "
+    "Be natural, conversational, and helpful. "
+    "Keep replies concise for casual messages, more detailed for complex questions."
 )
 
 
@@ -147,25 +147,24 @@ def translate_endpoint(req: TranslateRequest, _: str = Depends(require_api_key))
 
 @app.post("/v1/chat")
 def chat_endpoint(req: ChatRequest, _: str = Depends(require_api_key)):
-    groq_key = os.environ.get("GROQ_API_KEY", "")
-    if not groq_key:
-        raise HTTPException(503, "GROQ_API_KEY not set on server")
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not anthropic_key:
+        raise HTTPException(503, "ANTHROPIC_API_KEY not set on server")
 
-    client = Groq(api_key=groq_key)
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    client = anthropic_sdk.Anthropic(api_key=anthropic_key)
+    messages = []
     for m in req.history[-10:]:
         messages.append({"role": m.role, "content": m.content})
     messages.append({"role": "user", "content": req.message})
 
-    completion = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=messages,
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",
         max_tokens=512,
-        temperature=0.7,
+        system=SYSTEM_PROMPT,
+        messages=messages,
     )
-    reply_en = completion.choices[0].message.content.strip()
-    reply_so = translate(reply_en, "en", "so")
-    return {"reply_en": reply_en, "reply_so": reply_so}
+    reply_so = response.content[0].text.strip()
+    return {"reply_en": "", "reply_so": reply_so}
 
 
 @app.post("/v1/translate/batch")

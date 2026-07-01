@@ -409,10 +409,12 @@
     bubble.className = "bubble";
 
     if (role === "bot" && soText) {
-      const en = document.createElement("div");
-      en.className = "en-text";
-      en.textContent = text;
-      bubble.appendChild(en);
+      if (text) {
+        const en = document.createElement("div");
+        en.className = "en-text";
+        en.textContent = text;
+        bubble.appendChild(en);
+      }
       bubble.appendChild(document.createTextNode(soText));
     } else {
       bubble.textContent = text;
