@@ -8,14 +8,18 @@ Start: SUGAN_API_KEY=your-key uvicorn api.server:app --host 0.0.0.0 --port 10100
 
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated, Literal
 
 import torch
 from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+HTML_FILE = Path(__file__).parent / "index.html"
 
 MODEL = "facebook/nllb-200-distilled-1.3B"
 
@@ -104,6 +108,8 @@ class BatchTranslateRequest(BaseModel):
 
 @app.get("/")
 def root():
+    if HTML_FILE.exists():
+        return FileResponse(HTML_FILE, media_type="text/html")
     return {"service": "Sugan AI", "status": "ok", "version": "0.1.0"}
 
 

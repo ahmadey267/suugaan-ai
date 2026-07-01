@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Sugan AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f14;
+      --surface: #1a1a24;
+      --border: #2a2a38;
+      --user-bg: #4f46e5;
+      --bot-bg: #1e1e2e;
+      --text: #f1f1f5;
+      --muted: #6b6b80;
+      --accent: #818cf8;
+      --radius: 18px;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #4f46e5, #818cf8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .header-text p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      margin-left: auto;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    /* Key setup banner */
+    #key-banner {
+      background: #2d1f00;
+      border-bottom: 1px solid #5a3e00;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #fbbf24;
+    }
+
+    #key-banner input {
+      flex: 1;
+      background: #1a1200;
+      border: 1px solid #5a3e00;
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: #fbbf24;
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+    }
+
+    #key-banner button {
+      background: #fbbf24;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Messages */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .msg-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .msg-row.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #4f46e5, #818cf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .bubble-wrap {
+      max-width: 75%;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .msg-row.user .bubble-wrap { align-items: flex-end; }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .msg-row.user .bubble {
+      background: var(--user-bg);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .msg-row.bot .bubble {
+      background: var(--bot-bg);
+      color: var(--text);
+      border-bottom-left-radius: 5px;
+      border: 1px solid var(--border);
+    }
+
+    .bubble .en-text {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .time {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+
+    /* Typing indicator */
+    .typing .bubble {
+      padding: 12px 16px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .dots span {
+      width: 6px;
+      height: 6px;
+      background: var(--muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* Welcome */
+    .welcome {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .welcome .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .welcome h2 {
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Input */
+    #input-area {
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    #msg-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+      line-height: 1.4;
+      transition: border-color 0.2s;
+    }
+
+    #msg-input::placeholder { color: var(--muted); }
+    #msg-input:focus { border-color: var(--accent); }
+
+    #send-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--user-bg);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    #send-btn:active { transform: scale(0.92); }
+    #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #send-btn svg { width: 18px; height: 18px; fill: white; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">S</div>
+    <div class="header-text">
+      <h1>Sugan AI</h1>
+      <p>English → Somali</p>
+    </div>
+    <div class="status-dot" id="status-dot"></div>
+  </header>
+
+  <div id="key-banner" style="display:none">
+    <span>API Key:</span>
+    <input type="password" id="key-input" placeholder="Enter your API key" />
+    <button onclick="saveKey()">Save</button>
+  </div>
+
+  <div id="messages">
+    <div class="welcome" id="welcome">
+      <div class="icon">🌍</div>
+      <h2>Sugan AI</h2>
+      <p>Type anything in English and I'll translate it to Somali in real time.</p>
+    </div>
+  </div>
+
+  <div id="input-area">
+    <textarea id="msg-input" rows="1" placeholder="Type in English…"></textarea>
+    <button id="send-btn" onclick="send()" disabled>
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const API_BASE = window.location.origin;
+  let apiKey = localStorage.getItem("sugan_api_key") || "";
+
+  function init() {
+    if (!apiKey) {
+      document.getElementById("key-banner").style.display = "flex";
+      document.getElementById("send-btn").disabled = true;
+    } else {
+      document.getElementById("send-btn").disabled = false;
+      checkHealth();
+    }
+  }
+
+  function saveKey() {
+    const val = document.getElementById("key-input").value.trim();
+    if (!val) return;
+    apiKey = val;
+    localStorage.setItem("sugan_api_key", val);
+    document.getElementById("key-banner").style.display = "none";
+    document.getElementById("send-btn").disabled = false;
+    checkHealth();
+  }
+
+  async function checkHealth() {
+    try {
+      const r = await fetch(API_BASE + "/health");
+      if (r.ok) {
+        document.getElementById("status-dot").style.background = "#22c55e";
+        document.getElementById("status-dot").style.boxShadow = "0 0 6px #22c55e";
+      }
+    } catch {
+      document.getElementById("status-dot").style.background = "#ef4444";
+      document.getElementById("status-dot").style.boxShadow = "0 0 6px #ef4444";
+    }
+  }
+
+  const input = document.getElementById("msg-input");
+  const msgs = document.getElementById("messages");
+
+  input.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
+    document.getElementById("send-btn").disabled = !this.value.trim() || !apiKey;
+  });
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  function now() {
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function addMessage(text, role, soText) {
+    document.getElementById("welcome")?.remove();
+
+    const row = document.createElement("div");
+    row.className = "msg-row " + role;
+
+    if (role === "bot") {
+      const av = document.createElement("div");
+      av.className = "avatar";
+      av.textContent = "S";
+      row.appendChild(av);
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    if (role === "bot" && soText) {
+      const en = document.createElement("div");
+      en.className = "en-text";
+      en.textContent = text;
+      bubble.appendChild(en);
+      bubble.appendChild(document.createTextNode(soText));
+    } else {
+      bubble.textContent = text;
+    }
+
+    const time = document.createElement("div");
+    time.className = "time";
+    time.textContent = now();
+
+    wrap.appendChild(bubble);
+    wrap.appendChild(time);
+    row.appendChild(wrap);
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+    return row;
+  }
+
+  function addTyping() {
+    const row = document.createElement("div");
+    row.className = "msg-row bot typing";
+    row.id = "typing";
+
+    const av = document.createElement("div");
+    av.className = "avatar";
+    av.textContent = "S";
+
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
+
+    wrap.appendChild(bubble);
+    row.appendChild(av);
+    row.appendChild(wrap);
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+    return row;
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text || !apiKey) return;
+
+    input.value = "";
+    input.style.height = "auto";
+    document.getElementById("send-btn").disabled = true;
+
+    addMessage(text, "user");
+    const typing = addTyping();
+
+    try {
+      const res = await fetch(API_BASE + "/v1/translate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey,
+        },
+        body: JSON.stringify({ text, source: "en", target: "so" }),
+      });
+
+      typing.remove();
+
+      if (res.status === 401) {
+        addMessage("Invalid API key. Tap the key icon to update it.", "bot");
+        document.getElementById("key-banner").style.display = "flex";
+        return;
+      }
+
+      const data = await res.json();
+      addMessage(text, "bot", data.translation);
+    } catch (err) {
+      typing.remove();
+      addMessage("Connection error. Is the server running?", "bot");
+    }
+
+    document.getElementById("send-btn").disabled = false;
+    input.focus();
+  }
+
+  init();
+</script>
+</body>
+</html>
