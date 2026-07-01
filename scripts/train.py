@@ -106,7 +106,7 @@ def main():
         logging_steps=10,
         save_strategy="epoch",
         eval_strategy="epoch",
-        max_seq_length=args.max_seq_len,
+        max_length=args.max_seq_len,
         dataset_text_field="text",
         report_to="none",
         warmup_ratio=0.05,
