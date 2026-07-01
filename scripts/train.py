@@ -109,7 +109,7 @@ def main():
         max_length=args.max_seq_len,
         dataset_text_field="text",
         report_to="none",
-        warmup_ratio=0.05,
+        warmup_steps=500,
         lr_scheduler_type="cosine",
     )
 
@@ -118,7 +118,7 @@ def main():
         args=training_args,
         train_dataset=dataset["train"],
         eval_dataset=dataset["eval"],
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
     )
 
     print("Starting training...")
