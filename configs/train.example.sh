@@ -2,7 +2,8 @@
 # Full training run — paste this into a cloud GPU shell (A100 40GB recommended).
 # Prerequisites:
 #   1. pip install -r requirements.txt
-#   2. huggingface-cli login   (Gemma is gated — accept licence at hf.co/google/gemma-3-1b-it)
+#   2. hf auth login           (Gemma is gated — accept licence at hf.co/google/gemma-3-1b-it)
+#      (old CLI was huggingface-cli login; the new one is: hf auth login)
 set -e
 
 cd "$(dirname "$0")/.."

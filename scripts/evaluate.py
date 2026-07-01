@@ -40,20 +40,28 @@ def load_eval_pairs(eval_file: Path, limit: int | None = None):
 
 def generate(model, tokenizer, prompt: str, device: str, max_new_tokens: int = 200) -> str:
     messages = [{"role": "user", "content": prompt}]
-    input_ids = tokenizer.apply_chat_template(
+    # transformers 5.x apply_chat_template returns BatchEncoding; extract input_ids
+    chat_out = tokenizer.apply_chat_template(
         messages,
         tokenize=True,
         add_generation_prompt=True,
         return_tensors="pt",
-    ).to(device)
+    )
+    if hasattr(chat_out, "input_ids"):
+        input_ids = chat_out.input_ids.to(device)
+    else:
+        input_ids = chat_out.to(device)
+    attention_mask = torch.ones_like(input_ids)
+    prompt_len = input_ids.shape[-1]
     with torch.no_grad():
         out = model.generate(
             input_ids,
+            attention_mask=attention_mask,
             max_new_tokens=max_new_tokens,
             do_sample=False,
             pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
         )
-    new_tokens = out[0][input_ids.shape[-1]:]
+    new_tokens = out[0][prompt_len:]
     return tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
 
 
@@ -65,11 +73,13 @@ def main():
     parser.add_argument("--eval_file", type=str, default="data/eval.jsonl")
     parser.add_argument("--limit", type=int, default=200)
     parser.add_argument("--show_samples", type=int, default=5)
+    parser.add_argument("--device", type=str, default=None,
+                        help="Force device: cuda/mps/cpu. Defaults to best available.")
     parser.add_argument("--lora", action="store_true",
                         help="model_dir is a LoRA adapter directory (loads and merges on the fly)")
     args = parser.parse_args()
 
-    device = detect_device()
+    device = args.device or detect_device()
     print(f"Device: {device}")
 
     model_path = args.model_dir or args.base_model
@@ -83,13 +93,13 @@ def main():
     if args.lora:
         from peft import PeftModel
         base = AutoModelForCausalLM.from_pretrained(
-            args.base_model, torch_dtype=dtype, device_map=device
+            args.base_model, dtype=dtype, device_map=device
         )
         model = PeftModel.from_pretrained(base, args.model_dir)
         model = model.merge_and_unload()
     else:
         model = AutoModelForCausalLM.from_pretrained(
-            model_path, torch_dtype=dtype, device_map=device
+            model_path, dtype=dtype, device_map=device
         )
 
     model.eval()

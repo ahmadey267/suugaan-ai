@@ -26,7 +26,7 @@ Data prep and evaluation run on CPU or Apple Silicon (MPS).
 
 ## Dataset
 
-[Helsinki-NLP/opus-100](https://huggingface.co/datasets/Helsinki-NLP/opus-100) `en-so` split (~1M sentence pairs).
+[michsethowusu/english-somali_sentence-pairs_mt560](https://huggingface.co/datasets/michsethowusu/english-somali_sentence-pairs_mt560) — 161k parallel sentence pairs, CC-BY 4.0, derived from OPUS MT560.
 
 ## Model
 

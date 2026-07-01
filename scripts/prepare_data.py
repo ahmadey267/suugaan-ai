@@ -22,6 +22,14 @@ def format_example(en: str, so: str) -> dict:
     }
 
 
+def clean_text(text: str) -> str:
+    """Remove OPUS tokenization artefacts like 'word @-@ word' → 'word-word'."""
+    import re
+    text = re.sub(r' @-@ ', '-', text)
+    text = re.sub(r' @,@ ', ',', text)
+    return text.strip()
+
+
 def is_valid_pair(en: str, so: str, min_len: int = 5, max_len: int = 400) -> bool:
     en, so = en.strip(), so.strip()
     if not en or not so:
@@ -41,34 +49,25 @@ def is_valid_pair_langid(en: str, so: str) -> bool:
     return en_lang == "en" and so_lang in ("so", "sw", "ha", "om")
 
 
-def load_opus100(max_bulk: int):
-    """Load Helsinki-NLP/opus-100 en-so split."""
+def load_en_so(max_bulk: int):
+    """Load michsethowusu/english-somali_sentence-pairs_mt560 (161k pairs, CC-BY 4.0)."""
+    print("  Loading michsethowusu/english-somali_sentence-pairs_mt560...")
+    ds = load_dataset("michsethowusu/english-somali_sentence-pairs_mt560")
     pairs = []
-    # opus-100 config names can be en-so or so-en depending on the version
-    for config in ("en-so", "so-en"):
-        try:
-            print(f"  Trying opus-100 config '{config}'...")
-            ds = load_dataset("Helsinki-NLP/opus-100", config, trust_remote_code=True)
-            for split in ("train", "validation", "test"):
-                if split not in ds:
-                    continue
-                for ex in ds[split]:
-                    t = ex.get("translation", {})
-                    en = t.get("en", "")
-                    so = t.get("so", "")
-                    if en and so:
-                        pairs.append((en, so))
-                    if len(pairs) >= max_bulk:
-                        break
-                if len(pairs) >= max_bulk:
-                    break
-            if pairs:
-                print(f"  Loaded {len(pairs)} pairs from config '{config}'")
-                return pairs
-        except Exception as e:
-            print(f"  Config '{config}' failed: {e}")
-
-    raise RuntimeError("Could not load opus-100 en-so — see errors above.")
+    for split in ("train", "validation", "test"):
+        if split not in ds:
+            continue
+        for ex in ds[split]:
+            en = clean_text(ex.get("eng", ""))
+            so = clean_text(ex.get("som", ""))
+            if en and so:
+                pairs.append((en, so))
+            if len(pairs) >= max_bulk:
+                break
+        if len(pairs) >= max_bulk:
+            break
+    print(f"  Loaded {len(pairs)} pairs")
+    return pairs
 
 
 def main():
@@ -85,8 +84,8 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(exist_ok=True)
 
-    print(f"Loading OPUS-100 en-so (cap {args.max_bulk} pairs)...")
-    pairs = load_opus100(args.max_bulk)
+    print(f"Loading en-so dataset (cap {args.max_bulk} pairs)...")
+    pairs = load_en_so(args.max_bulk)
     print(f"Raw pairs: {len(pairs)}")
 
     print("Filtering by length...")
