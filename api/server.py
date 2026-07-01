@@ -3,15 +3,17 @@
 Sugan AI — Translation API server.
 Uses NLLB-200 for production-quality English ↔ Somali translation.
 
-Start: uvicorn api.server:app --host 0.0.0.0 --port 8000
+Start: SUGAN_API_KEY=your-key uvicorn api.server:app --host 0.0.0.0 --port 10100
 """
 
+import os
 from contextlib import asynccontextmanager
-from typing import Literal
+from typing import Annotated, Literal
 
 import torch
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -23,6 +25,17 @@ LANG_CODES = {
 }
 
 state: dict = {}
+
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+
+def require_api_key(key: Annotated[str | None, Security(_api_key_header)]) -> str:
+    expected = os.environ.get("SUGAN_API_KEY", "")
+    if not expected:
+        return key or ""
+    if key != expected:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return key
 
 
 def translate(text: str | list, src: str, tgt: str) -> str | list:
@@ -49,7 +62,8 @@ async def lifespan(app: FastAPI):
     state["tokenizer"] = tokenizer
     state["model"] = model
     state["device"] = device
-    print("Ready.")
+    api_key_set = bool(os.environ.get("SUGAN_API_KEY"))
+    print(f"Ready. API key auth: {'enabled' if api_key_set else 'DISABLED — set SUGAN_API_KEY'}")
     yield
     state.clear()
 
@@ -95,11 +109,11 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "models_loaded": list(translators.keys())}
+    return {"status": "ok", "model": MODEL}
 
 
 @app.post("/v1/translate", response_model=TranslateResponse)
-def translate_endpoint(req: TranslateRequest):
+def translate_endpoint(req: TranslateRequest, _: str = Depends(require_api_key)):
     if req.source == req.target:
         raise HTTPException(400, "source and target must differ")
     result = translate(req.text, req.source, req.target)
@@ -107,7 +121,7 @@ def translate_endpoint(req: TranslateRequest):
 
 
 @app.post("/v1/translate/batch")
-def translate_batch(req: BatchTranslateRequest):
+def translate_batch(req: BatchTranslateRequest, _: str = Depends(require_api_key)):
     if req.source == req.target:
         raise HTTPException(400, "source and target must differ")
     results = translate(req.texts, req.source, req.target)
