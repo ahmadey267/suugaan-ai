@@ -5,20 +5,27 @@ Run on the VPS: python scripts/translate_nllb.py
 """
 
 import torch
-from transformers import pipeline
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 MODEL = "facebook/nllb-200-distilled-1.3B"
-device = 0 if torch.cuda.is_available() else -1
+SRC = "eng_Latn"
+TGT = "som_Latn"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-print(f"Loading {MODEL}...")
-translator = pipeline(
-    "translation",
-    model=MODEL,
-    src_lang="eng_Latn",
-    tgt_lang="som_Latn",
-    device=device,
-    max_length=400,
-)
+print(f"Loading {MODEL} on {device}...")
+tokenizer = AutoTokenizer.from_pretrained(MODEL)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL, dtype=torch.float16).to(device)
+model.eval()
+
+
+def translate(text: str) -> str:
+    tokenizer.src_lang = SRC
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=400).to(device)
+    tgt_lang_id = tokenizer.convert_tokens_to_ids(TGT)
+    with torch.no_grad():
+        out = model.generate(**inputs, forced_bos_token_id=tgt_lang_id, max_length=400)
+    return tokenizer.decode(out[0], skip_special_tokens=True)
+
 
 sentences = [
     "Where is the hospital?",
@@ -32,7 +39,6 @@ sentences = [
 
 print()
 for en in sentences:
-    result = translator(en)[0]["translation_text"]
     print(f"EN: {en}")
-    print(f"SO: {result}")
+    print(f"SO: {translate(en)}")
     print()

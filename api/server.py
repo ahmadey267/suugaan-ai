@@ -13,7 +13,7 @@ import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from transformers import pipeline
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 MODEL = "facebook/nllb-200-distilled-1.3B"
 
@@ -22,35 +22,36 @@ LANG_CODES = {
     "so": "som_Latn",
 }
 
-translators: dict = {}
+state: dict = {}
+
+
+def translate(text: str | list, src: str, tgt: str) -> str | list:
+    tokenizer = state["tokenizer"]
+    model = state["model"]
+    device = state["device"]
+    tokenizer.src_lang = LANG_CODES[src]
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=400).to(device)
+    tgt_id = tokenizer.convert_tokens_to_ids(LANG_CODES[tgt])
+    with torch.no_grad():
+        out = model.generate(**inputs, forced_bos_token_id=tgt_id, max_length=400)
+    if isinstance(text, list):
+        return [tokenizer.decode(o, skip_special_tokens=True) for o in out]
+    return tokenizer.decode(out[0], skip_special_tokens=True)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    device = 0 if torch.cuda.is_available() else -1
-    print(f"Loading {MODEL} on {'CUDA' if device == 0 else 'CPU'}...")
-
-    # en → so
-    translators["en-so"] = pipeline(
-        "translation",
-        model=MODEL,
-        src_lang="eng_Latn",
-        tgt_lang="som_Latn",
-        device=device,
-        max_length=400,
-    )
-    # so → en
-    translators["so-en"] = pipeline(
-        "translation",
-        model=MODEL,
-        src_lang="som_Latn",
-        tgt_lang="eng_Latn",
-        device=device,
-        max_length=400,
-    )
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Loading {MODEL} on {device}...")
+    tokenizer = AutoTokenizer.from_pretrained(MODEL)
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL, dtype=torch.float16).to(device)
+    model.eval()
+    state["tokenizer"] = tokenizer
+    state["model"] = model
+    state["device"] = device
     print("Ready.")
     yield
-    translators.clear()
+    state.clear()
 
 
 app = FastAPI(
@@ -98,36 +99,16 @@ def health():
 
 
 @app.post("/v1/translate", response_model=TranslateResponse)
-def translate(req: TranslateRequest):
+def translate_endpoint(req: TranslateRequest):
     if req.source == req.target:
         raise HTTPException(400, "source and target must differ")
-
-    key = f"{req.source}-{req.target}"
-    if key not in translators:
-        raise HTTPException(400, f"Direction {key} not supported")
-
-    result = translators[key](req.text)[0]["translation_text"]
-    return TranslateResponse(
-        translation=result,
-        source=req.source,
-        target=req.target,
-        model=MODEL,
-    )
+    result = translate(req.text, req.source, req.target)
+    return TranslateResponse(translation=result, source=req.source, target=req.target, model=MODEL)
 
 
 @app.post("/v1/translate/batch")
 def translate_batch(req: BatchTranslateRequest):
     if req.source == req.target:
         raise HTTPException(400, "source and target must differ")
-
-    key = f"{req.source}-{req.target}"
-    if key not in translators:
-        raise HTTPException(400, f"Direction {key} not supported")
-
-    results = translators[key](req.texts)
-    return {
-        "translations": [r["translation_text"] for r in results],
-        "source": req.source,
-        "target": req.target,
-        "model": MODEL,
-    }
+    results = translate(req.texts, req.source, req.target)
+    return {"translations": results, "source": req.source, "target": req.target, "model": MODEL}
