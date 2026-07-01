@@ -322,7 +322,7 @@
     <div class="welcome" id="welcome">
       <div class="icon">🌍</div>
       <h2>Sugan AI</h2>
-      <p>Type anything in English and I'll translate it to Somali in real time.</p>
+      <p>Chat in English — I'll reply and translate everything to Somali.</p>
     </div>
   </div>
 
@@ -337,6 +337,7 @@
 <script>
   const API_BASE = window.location.origin;
   let apiKey = localStorage.getItem("sugan_api_key") || "";
+  let history = [];
 
   function init() {
     if (!apiKey) {
@@ -465,13 +466,13 @@
     const typing = addTyping();
 
     try {
-      const res = await fetch(API_BASE + "/v1/translate", {
+      const res = await fetch(API_BASE + "/v1/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-API-Key": apiKey,
         },
-        body: JSON.stringify({ text, source: "en", target: "so" }),
+        body: JSON.stringify({ message: text, history }),
       });
 
       typing.remove();
@@ -483,7 +484,11 @@
       }
 
       const data = await res.json();
-      addMessage(text, "bot", data.translation);
+      history.push({ role: "user", content: text });
+      history.push({ role: "assistant", content: data.reply_en });
+      if (history.length > 20) history = history.slice(-20);
+
+      addMessage(data.reply_en, "bot", data.reply_so);
     } catch (err) {
       typing.remove();
       addMessage("Connection error. Is the server running?", "bot");

@@ -16,6 +16,7 @@ from fastapi import Depends, FastAPI, HTTPException, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import APIKeyHeader
+from groq import Groq
 from pydantic import BaseModel, Field
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
@@ -106,6 +107,24 @@ class BatchTranslateRequest(BaseModel):
     target: Literal["en", "so"] = "so"
 
 
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=2000)
+    history: list[ChatMessage] = Field(default_factory=list, max_length=20)
+
+
+SYSTEM_PROMPT = (
+    "You are a helpful AI assistant called Sugan AI. "
+    "The user is chatting with you in English. Respond helpfully and naturally. "
+    "Keep replies concise (2-4 sentences for casual messages, longer for detailed questions). "
+    "Your response will be translated to Somali for the user."
+)
+
+
 @app.get("/")
 def root():
     if HTML_FILE.exists():
@@ -124,6 +143,29 @@ def translate_endpoint(req: TranslateRequest, _: str = Depends(require_api_key))
         raise HTTPException(400, "source and target must differ")
     result = translate(req.text, req.source, req.target)
     return TranslateResponse(translation=result, source=req.source, target=req.target, model=MODEL)
+
+
+@app.post("/v1/chat")
+def chat_endpoint(req: ChatRequest, _: str = Depends(require_api_key)):
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    if not groq_key:
+        raise HTTPException(503, "GROQ_API_KEY not set on server")
+
+    client = Groq(api_key=groq_key)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    for m in req.history[-10:]:
+        messages.append({"role": m.role, "content": m.content})
+    messages.append({"role": "user", "content": req.message})
+
+    completion = client.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=messages,
+        max_tokens=512,
+        temperature=0.7,
+    )
+    reply_en = completion.choices[0].message.content.strip()
+    reply_so = translate(reply_en, "en", "so")
+    return {"reply_en": reply_en, "reply_so": reply_so}
 
 
 @app.post("/v1/translate/batch")
