@@ -7,10 +7,14 @@ Outputs data/train.jsonl and data/eval.jsonl in Gemma-3 chat-template format.
 import argparse
 import json
 import random
+import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from datasets import load_dataset
 from tqdm import tqdm
+
+PONTOON_TMX_URL = "https://pontoon.mozilla.org/translation-memory/so.common-voice.tmx"
 
 
 def format_example(en: str, so: str) -> dict:
@@ -70,6 +74,36 @@ def load_en_so(max_bulk: int):
     return pairs
 
 
+def load_pontoon_tm(cache_path: Path):
+    """Load human-reviewed en-so pairs from the Mozilla Pontoon Common Voice
+    translation memory (UI strings for the Common Voice project)."""
+    if cache_path.exists():
+        print(f"  Using cached {cache_path}")
+        tmx_bytes = cache_path.read_bytes()
+    else:
+        print(f"  Downloading {PONTOON_TMX_URL}...")
+        with urllib.request.urlopen(PONTOON_TMX_URL) as resp:
+            tmx_bytes = resp.read()
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_bytes(tmx_bytes)
+
+    root = ET.fromstring(tmx_bytes)
+    pairs = []
+    for tu in root.iter("tu"):
+        en, so = None, None
+        for tuv in tu.findall("tuv"):
+            lang = tuv.get("{http://www.w3.org/XML/1998/namespace}lang", "")
+            seg = tuv.findtext("seg", "")
+            if lang.startswith("en"):
+                en = seg
+            elif lang.startswith("so"):
+                so = seg
+        if en and so:
+            pairs.append((clean_text(en), clean_text(so)))
+    print(f"  Loaded {len(pairs)} pairs from Pontoon Common Voice TM")
+    return pairs
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max_bulk", type=int, default=50000)
@@ -78,6 +112,11 @@ def main():
     parser.add_argument("--out_dir", type=str, default="data")
     parser.add_argument("--no_langid", action="store_true",
                         help="Skip langid filtering (faster, less clean)")
+    parser.add_argument("--no_pontoon", action="store_true",
+                        help="Skip the Mozilla Pontoon Common Voice translation memory")
+    parser.add_argument("--pontoon_oversample", type=int, default=5,
+                        help="Repeat the small human-reviewed Pontoon set this many times "
+                             "so it isn't drowned out by the bulk corpus")
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -96,6 +135,13 @@ def main():
         print("Filtering with langid (slow — use --no_langid to skip)...")
         pairs = [(en, so) for en, so in tqdm(pairs) if is_valid_pair_langid(en, so)]
         print(f"After langid filter: {len(pairs)}")
+
+    if not args.no_pontoon:
+        print("Loading Mozilla Pontoon Common Voice translation memory...")
+        pontoon_pairs = load_pontoon_tm(out_dir / "pontoon_common_voice_tm.xml")
+        pontoon_pairs = [(en, so) for en, so in pontoon_pairs if is_valid_pair(en, so, min_len=1)]
+        print(f"  {len(pontoon_pairs)} valid pairs, oversampled x{args.pontoon_oversample}")
+        pairs.extend(pontoon_pairs * args.pontoon_oversample)
 
     random.shuffle(pairs)
 

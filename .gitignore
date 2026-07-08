@@ -8,6 +8,7 @@ __pycache__/
 # Data files (can be large)
 data/*.jsonl
 data/*.json
+data/*.xml
 
 # Model outputs
 outputs/
