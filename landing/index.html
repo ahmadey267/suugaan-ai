@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sugan AI — English ↔ Somali Translation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #07101F;
+      --bg-mid:    #0D1E35;
+      --bg-card:   #0F2240;
+      --coral:     #F04B2D;
+      --coral-dim: #c03820;
+      --teal:      #00C9A0;
+      --text:      #EDE6DB;
+      --muted:     #6B8099;
+      --border:    rgba(255,255,255,0.07);
+      --radius:    14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(7,16,31,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--coral); }
+
+    nav ul {
+      display: flex; gap: 36px; list-style: none;
+    }
+
+    nav ul a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--coral);
+      color: #fff !important;
+      padding: 9px 22px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      font-size: 0.88rem !important;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--coral-dim) !important; color: #fff !important; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,201,160,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(240,75,45,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,201,160,0.1);
+      border: 1px solid rgba(0,201,160,0.2);
+      color: var(--teal);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 7vw, 6rem);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--coral);
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.15rem;
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 64px;
+    }
+
+    .btn-primary {
+      background: var(--coral);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--coral-dim); transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 1rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+
+    /* ── Live demo ── */
+    .demo-card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .demo-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .demo-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    .demo-bar span {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: auto;
+      font-family: 'Inter', monospace;
+    }
+
+    .demo-body {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+
+    .demo-pane {
+      padding: 24px;
+    }
+
+    .demo-pane:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .demo-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .demo-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      min-height: 60px;
+      color: var(--text);
+    }
+
+    .demo-text.somali { color: var(--teal); }
+
+    .cursor {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: var(--coral);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .demo-footer {
+      padding: 12px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .demo-status {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .demo-status.translating { color: var(--teal); }
+
+    /* ── Stats ── */
+    .stats {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex; justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-n {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.4rem;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-n span { color: var(--coral); }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── Section scaffold ── */
+    section {
+      padding: 96px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    /* ── Audience cards ── */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 56px;
+    }
+
+    .audience-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+
+    .audience-card:hover {
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-3px);
+    }
+
+    .audience-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 24px;
+    }
+
+    .audience-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .audience-card p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .card-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .card-features li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .card-features li::before {
+      content: '';
+      width: 16px; height: 16px; flex-shrink: 0;
+      background: rgba(0,201,160,0.15);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='%2300C9A0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .card-link {
+      color: var(--coral);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+    }
+
+    .card-link:hover { gap: 10px; }
+
+    /* ── How it works ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 56px;
+    }
+
+    .step {
+      padding: 32px;
+      border-radius: var(--radius);
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 3rem;
+      line-height: 1;
+      color: rgba(255,255,255,0.04);
+      margin-bottom: 16px;
+      letter-spacing: -0.04em;
+    }
+
+    .step h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .step code {
+      display: block;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: var(--teal);
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      border: 1px solid rgba(0,201,160,0.1);
+      word-break: break-all;
+    }
+
+    /* ── Pricing ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 56px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 28px;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--coral);
+      position: relative;
+    }
+
+    .featured-tag {
+      position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--coral);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .plan-price {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.6rem;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .plan-price sub {
+      font-size: 1rem;
+      font-weight: 600;
+      vertical-align: baseline;
+      letter-spacing: 0;
+    }
+
+    .plan-unit {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 24px;
+    }
+
+    .plan-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .plan-features li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      color: var(--teal);
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .plan-features li.dim::before { color: var(--muted); content: '–'; }
+    .plan-features li.dim { opacity: 0.5; }
+
+    .btn-plan {
+      display: block;
+      text-align: center;
+      padding: 13px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-plan-outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-plan-outline:hover { border-color: rgba(255,255,255,0.25); }
+
+    .btn-plan-fill {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .btn-plan-fill:hover { background: var(--coral-dim); transform: translateY(-1px); }
+
+    /* ── CTA banner ── */
+    .cta-banner {
+      margin: 0 48px 96px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #0D2137 0%, #102B44 100%);
+      border: 1px solid rgba(0,201,160,0.15);
+      padding: 72px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 200px;
+      background: radial-gradient(ellipse, rgba(0,201,160,0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-banner h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta-banner p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 36px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    footer .logo { font-size: 1.1rem; }
+
+    .footer-links {
+      display: flex; gap: 28px; list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      nav ul { display: none; }
+      section { padding: 64px 24px; }
+      .stats { padding: 32px 24px; gap: 40px; }
+      .audience-grid, .steps, .pricing-grid { grid-template-columns: 1fr; }
+      .demo-body { grid-template-columns: 1fr; }
+      .demo-pane:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+      .cta-banner { margin: 0 24px 64px; padding: 48px 32px; }
+      footer { padding: 24px; flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cursor { animation: none; }
+      .hero-eyebrow::before { animation: none; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a class="logo" href="#">Sugan<span>AI</span></a>
+  <ul>
+    <li><a href="#for-who">Who it's for</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#pricing" class="nav-cta">Start free</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Now in early access</div>
+  <h1>Translate English to<br><em>Somali</em>, instantly.</h1>
+  <p>The first dedicated English–Somali translation API. Built for developers, businesses, and the 22 million Somali speakers worldwide.</p>
+  <div class="hero-actions">
+    <a href="#pricing" class="btn-primary">Get API key</a>
+    <a href="#for-who" class="btn-secondary">See what it can do</a>
+  </div>
+
+  <!-- Live translation demo -->
+  <div class="demo-card">
+    <div class="demo-bar">
+      <div class="demo-dot" style="background:#FF5F57"></div>
+      <div class="demo-dot" style="background:#FFBD2E"></div>
+      <div class="demo-dot" style="background:#28CA42"></div>
+      <span>sugan-ai · live demo</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-pane">
+        <div class="demo-label">English</div>
+        <div class="demo-text" id="en-text"></div>
+      </div>
+      <div class="demo-pane">
+        <div class="demo-label">Somali</div>
+        <div class="demo-text somali" id="so-text"></div>
+      </div>
+    </div>
+    <div class="demo-footer">
+      <div class="demo-status" id="demo-status">Ready</div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-n">161<span>k</span></div>
+    <div class="stat-label">Training sentence pairs</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">1<span>B</span></div>
+    <div class="stat-label">Parameter base model</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">22<span>M</span></div>
+    <div class="stat-label">Somali speakers worldwide</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">&lt;200<span>ms</span></div>
+    <div class="stat-label">Average response time</div>
+  </div>
+</div>
+
+<!-- Who it's for -->
+<section id="for-who">
+  <div class="section-eyebrow">Who it's for</div>
+  <h2 class="section-title">Built for everyone<br>who needs Somali.</h2>
+  <p class="section-sub">One API. Three use cases. Unlimited potential.</p>
+
+  <div class="audience-grid">
+
+    <div class="audience-card">
+      <div class="audience-icon" style="background:rgba(240,75,45,0.1)">⚡</div>
+      <h3>Developers</h3>
+      <p>A clean REST API with SDKs for Python, JS, and more. Integrate Somali translation into your product in under an hour.</p>
+      <ul class="card-features">
+        <li>REST API + Python/JS SDKs</li>
+        <li>Streaming responses</li>
+        <li>Batch translation endpoint</li>
+        <li>99.9% uptime SLA</li>
+      </ul>
+      <a href="#how" class="card-link">View API docs →</a>
+    </div>
+
+    <div class="audience-card">
+      <div class="audience-icon" style="background:rgba(0,201,160,0.1)">🏢</div>
+      <h3>Businesses</h3>
+      <p>Translate documents, customer support, product listings, and legal content at scale. SOC 2 compliant, no data retention.</p>
+      <ul class="card-features">
+        <li>Bulk document translation</li>
+        <li>Custom glossary support</li>
+        <li>Dedicated infrastructure</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="#pricing" class="card-link">See business plans →</a>
+    </div>
+
+    <div class="audience-card">
+      <div class="audience-icon" style="background:rgba(255,189,46,0.1)">🌍</div>
+      <h3>Individuals</h3>
+      <p>Translate messages, documents, and websites between English and Somali. Free to use, no account needed to try it.</p>
+      <ul class="card-features">
+        <li>Web translator (no signup)</li>
+        <li>Mobile-friendly</li>
+        <li>Copy & paste in seconds</li>
+        <li>Free tier — 5,000 chars/day</li>
+      </ul>
+      <a href="#pricing" class="card-link">Try it free →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" style="padding-top: 0">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-title">Three lines of code.<br>Any language. Any scale.</h2>
+  <p class="section-sub">Integrate in minutes. Ship to production the same day.</p>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Get your API key</h3>
+      <p>Sign up and receive your key instantly. No credit card required for the free tier.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Make a request</h3>
+      <p>Send a POST request with your text. Get back a Somali translation in milliseconds.</p>
+      <code>POST api.sugan.ai/v1/translate
+{
+  "text": "Hello, how are you?",
+  "target": "so"
+}</code>
+    </div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Ship your product</h3>
+      <p>Use the translation anywhere — apps, websites, documents, customer support, or AI pipelines.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+  <div class="section-eyebrow">Pricing</div>
+  <h2 class="section-title">Start free.<br>Scale when you're ready.</h2>
+  <p class="section-sub">No contracts. Cancel anytime. Usage resets monthly.</p>
+
+  <div class="pricing-grid">
+
+    <div class="pricing-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price"><sub>$</sub>0</div>
+      <div class="plan-unit">forever</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li>5,000 characters / day</li>
+        <li>REST API access</li>
+        <li>Community support</li>
+        <li class="dim">Batch translation</li>
+        <li class="dim">Custom glossary</li>
+        <li class="dim">SLA guarantee</li>
+      </ul>
+      <a href="#" class="btn-plan btn-plan-outline">Get started</a>
+    </div>
+
+    <div class="pricing-card featured">
+      <div class="featured-tag">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><sub>$</sub>29</div>
+      <div class="plan-unit">per month</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li>2 million characters / month</li>
+        <li>REST API + SDKs</li>
+        <li>Batch translation</li>
+        <li>Custom glossary</li>
+        <li>Email support</li>
+        <li class="dim">Dedicated infrastructure</li>
+      </ul>
+      <a href="#" class="btn-plan btn-plan-fill">Start Pro</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">Custom</div>
+      <div class="plan-unit">volume pricing</div>
+      <hr class="plan-divider">
+      <ul class="plan-features">
+        <li>Unlimited characters</li>
+        <li>Dedicated infrastructure</li>
+        <li>Custom glossary</li>
+        <li>99.9% uptime SLA</li>
+        <li>Priority + Slack support</li>
+        <li>SOC 2 compliance</li>
+      </ul>
+      <a href="mailto:hello@sugan.ai" class="btn-plan btn-plan-outline">Contact us</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<div class="cta-banner">
+  <h2>The Somali internet<br>starts here.</h2>
+  <p>22 million speakers. One translation layer. Your product, in Somali.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <a href="#pricing" class="btn-primary">Get your API key</a>
+    <a href="mailto:hello@sugan.ai" class="btn-secondary">Talk to us</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <a class="logo" href="#">Sugan<span>AI</span></a>
+  <ul class="footer-links">
+    <li><a href="#">Docs</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="mailto:hello@sugan.ai">Contact</a></li>
+  </ul>
+  <span class="footer-copy">© 2026 Sugan AI. All rights reserved.</span>
+</footer>
+
+<script>
+  const pairs = [
+    ["Hello, how are you?",                    "Salaan, sidee tahay?"],
+    ["Breaking news from East Africa.",         "Wararka muhiimka ah ee Afrika Bariga."],
+    ["The meeting is scheduled for Monday.",    "Shirku wuxuu qorsheeysan yahay Isniin."],
+    ["Send me the document.",                   "I soo dir dukumiintiga."],
+    ["Welcome to Somalia.",                     "Soo dhawow Soomaaliya."],
+    ["Our team speaks your language.",          "Kooxdayadu luqaddaada ayay ku hadlaan."],
+  ];
+
+  let pairIdx = 0;
+  const enEl     = document.getElementById('en-text');
+  const soEl     = document.getElementById('so-text');
+  const statusEl = document.getElementById('demo-status');
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function typeText(el, text, speed = 40) {
+    el.innerHTML = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    el.appendChild(cursor);
+    for (const ch of text) {
+      cursor.insertAdjacentText('beforebegin', ch);
+      await sleep(speed + Math.random() * 20);
+    }
+  }
+
+  async function runDemo() {
+    while (true) {
+      const [en, so] = pairs[pairIdx % pairs.length];
+      pairIdx++;
+
+      soEl.innerHTML = '';
+      statusEl.className = 'demo-status';
+      statusEl.textContent = 'Ready';
+
+      await typeText(enEl, en, 38);
+      await sleep(400);
+
+      statusEl.className = 'demo-status translating';
+      statusEl.textContent = 'Translating…';
+      await sleep(700);
+
+      await typeText(soEl, so, 32);
+
+      statusEl.className = 'demo-status';
+      statusEl.textContent = '✓ Done';
+      await sleep(2800);
+    }
+  }
+
+  runDemo();
+</script>
+
+</body>
+</html>
