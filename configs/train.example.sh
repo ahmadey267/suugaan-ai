@@ -19,8 +19,8 @@ python scripts/train.py \
   --data_dir data \
   --output_dir outputs/checkpoint \
   --epochs 3 \
-  --batch_size 8 \
-  --grad_accum 4 \
+  --batch_size 16 \
+  --grad_accum 2 \
   --lr 2e-4 \
   --max_seq_len 256
 
