@@ -50,6 +50,7 @@ export interface SiteContent {
     nextWord: string;
     pending: string;
     benchColumns: [string, string, string];
+    now: string;
     sending: string;
   };
   nav: {
@@ -71,7 +72,9 @@ export interface SiteContent {
     eyebrow: string;
     heading: string;
     body: string;
-    gaps: Item[];
+    /** addressedBy lists building block titles (from build.blocks) that answer each gap. */
+    gaps: (Item & { addressedBy: string[] })[];
+    columns: [string, string, string];
   };
   build: {
     eyebrow: string;
@@ -107,7 +110,8 @@ export interface SiteContent {
     eyebrow: string;
     heading: string;
     body: string;
-    audiences: Item[];
+    /** role preselects the matching "I am a" option in the contact form. */
+    audiences: (Item & { role: string })[];
     cta: { label: string; href: string };
   };
   contact: {
@@ -178,6 +182,7 @@ const en: SiteContent = {
     nextWord: 'next',
     pending: 'pending',
     benchColumns: ['task', 'metric', 'native speakers'],
+    now: 'Now',
     sending: 'Sending',
   },
   nav: {
@@ -209,22 +214,27 @@ const en: SiteContent = {
     eyebrow: 'The problem',
     heading: 'More than 20 million speakers. Almost no AI built for them.',
     body: 'Somali is spoken across Somalia, Ethiopia, Kenya, Djibouti and a global diaspora. Yet the AI tools the world now relies on handle it poorly. That leaves governments, businesses and students working in a second language, or going without.',
+    columns: ['Gap', 'What goes wrong', 'What we build'],
     gaps: [
       {
         title: 'Text.',
         body: 'General purpose models write weak Somali, mix dialects and mistranslate formal, legal and religious vocabulary.',
+        addressedBy: ['Data', 'Models'],
       },
       {
         title: 'Voice.',
         body: 'Somali culture is deeply oral, but speech tools for the language are limited.',
+        addressedBy: ['Voice'],
       },
       {
         title: 'Measurement.',
         body: 'There is no widely accepted benchmark to show which models are good enough for real work.',
+        addressedBy: ['Benchmark'],
       },
       {
         title: 'Ownership.',
         body: 'The little capability that exists sits inside foreign systems, outside the control of Somali institutions.',
+        addressedBy: ['Models', 'Data'],
       },
     ],
   },
@@ -352,18 +362,22 @@ const en: SiteContent = {
       {
         title: 'Funders and foundations.',
         body: 'Support the first phases of an open, measurable contribution to Somali language technology.',
+        role: 'Funder',
       },
       {
         title: 'Government and public institutions.',
         body: 'Bring documents and use cases, and get early access to Somali AI tools.',
+        role: 'Institution',
       },
       {
         title: 'Universities and researchers.',
         body: 'Collaborate on data, annotation and evaluation.',
+        role: 'Researcher',
       },
       {
         title: 'Compute and technology providers.',
         body: 'Contribute infrastructure and become part of a reference case in African language AI.',
+        role: 'Technology provider',
       },
     ],
     cta: { label: 'Start a conversation', href: '#contact' },

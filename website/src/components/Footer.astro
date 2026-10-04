@@ -9,9 +9,9 @@ const { c } = Astro.props;
 const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors duration-150 hover:text-gold';
 ---
 
-<footer class="border-t border-line py-14 text-small text-muted lg:py-20">
+<footer class="text-small text-muted">
   <div class="container-page">
-    <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+    <div class="frame frame-top frame-pad flex flex-col gap-8 py-12 sm:flex-row sm:items-start sm:justify-between">
       <div class="max-w-[40ch]">
         <p class="flex items-center gap-2.5 text-fg" data-placeholder="logo">
           <Logo />
@@ -32,6 +32,8 @@ const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors durati
         </li>
       </ul>
     </div>
-    <p class="mt-12 border-t border-line pt-6 font-mono text-[0.75rem]">{c.footer.copyright}</p>
+    <div class="frame frame-pad border-t border-line py-6">
+      <p class="font-mono text-[0.75rem]">{c.footer.copyright}</p>
+    </div>
   </div>
 </footer>

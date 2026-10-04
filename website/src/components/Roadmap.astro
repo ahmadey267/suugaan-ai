@@ -11,39 +11,56 @@ const { c } = Astro.props;
 const current = currentPhase(c);
 ---
 
-<section id="roadmap" aria-labelledby="roadmap-heading" class="section-pad border-t border-line">
+<section id="roadmap" aria-labelledby="roadmap-heading">
   <div class="container-page">
-    <SectionHeading eyebrow={c.roadmap.eyebrow} heading={c.roadmap.heading} headingId="roadmap-heading" intro={c.roadmap.note} />
+    <div class="frame frame-top frame-pad section-pad">
+      <SectionHeading index="04" eyebrow={c.roadmap.eyebrow} heading={c.roadmap.heading} headingId="roadmap-heading" intro={c.roadmap.note} />
 
-    <ol class="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
-      {
-        c.roadmap.phases.map((p, i) => {
-          const isCurrent = p.number === current.number;
-          return (
-            <li
-              class:list={[
-                'card flex min-h-[17rem] flex-col p-5 sm:p-6',
-                isCurrent && 'border-gold/50! bg-[linear-gradient(180deg,rgb(201_162_39/0.10),transparent_60%)] shadow-[0_0_60px_-20px_rgb(201_162_39/0.45)]',
-              ]}
-              aria-current={isCurrent ? 'step' : undefined}
-              data-reveal
-              style={`--reveal-i:${i}`}
-            >
-              <div class="flex items-center justify-between gap-3">
-                <span class="eyebrow text-muted">
-                  {c.ui.phaseWord} {p.number}
+      <ol class="mt-16 grid lg:mt-24 lg:grid-cols-4">
+        {
+          c.roadmap.phases.map((p, i) => {
+            const isCurrent = p.number === current.number;
+            const isDone = p.status === 'done';
+            return (
+              <li
+                class="relative grid grid-cols-[1.25rem_1fr] gap-x-5 pb-10 lg:flex lg:flex-col lg:gap-0 lg:pb-0"
+                aria-current={isCurrent ? 'step' : undefined}
+                data-reveal
+                style={`--reveal-i:${i}`}
+              >
+                {/* Track segment: vertical on mobile, horizontal ruler on desktop. */}
+                <span aria-hidden="true" class="relative row-span-2 lg:order-2 lg:mt-6 lg:mb-8 lg:h-3">
+                  <span
+                    class:list={[
+                      'absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 lg:inset-x-0 lg:inset-y-auto lg:top-0 lg:left-0 lg:h-3 lg:w-auto lg:translate-x-0',
+                      isCurrent ? 'hatch' : isDone ? 'bg-gold' : 'bg-line',
+                      i < c.roadmap.phases.length - 1 && 'lg:mr-px',
+                    ]}
+                  />
+                  <span class="ticks absolute inset-x-0 top-full hidden h-2 lg:block" />
+                  {isCurrent && (
+                    <span class="absolute -top-1 left-1/2 hidden -translate-x-1/2 lg:-top-7 lg:left-0 lg:block lg:translate-x-0">
+                      <span class="eyebrow text-gold">▼ {c.ui.now}</span>
+                    </span>
+                  )}
                 </span>
-                <StatusPill status={p.status} label={c.ui.statusLabels[p.status]} />
-              </div>
-              <span aria-hidden="true" class:list={['mt-8 font-mono text-[3.5rem] leading-none tracking-[-0.06em] tabular-nums', isCurrent ? 'text-gold' : 'text-line-strong']}>
-                0{p.number}
-              </span>
-              <h3 class="mt-auto pt-8 font-mono text-h3 font-medium">{p.name}</h3>
-              <p class="mt-2 text-small text-fg-2">{p.focus}</p>
-            </li>
-          );
-        })
-      }
-    </ol>
+
+                <div class="flex items-center justify-between gap-3 lg:order-1 lg:pr-6">
+                  <span class:list={['font-mono text-[0.8125rem] tabular-nums', isCurrent ? 'text-gold' : 'text-muted']}>
+                    {c.ui.phaseWord} {String(p.number).padStart(2, '0')}
+                  </span>
+                  <StatusPill status={p.status} label={c.ui.statusLabels[p.status]} />
+                </div>
+
+                <div class="mt-4 lg:order-3 lg:mt-0 lg:pr-8">
+                  <h3 class="font-mono text-[1.25rem] font-medium tracking-[-0.03em]">{p.name}</h3>
+                  <p class="mt-3 text-small text-fg-2">{p.focus}</p>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
   </div>
 </section>

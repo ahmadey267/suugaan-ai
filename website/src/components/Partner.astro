@@ -9,23 +9,31 @@ interface Props {
 const { c } = Astro.props;
 ---
 
-<section id="partner" aria-labelledby="partner-heading" class="relative section-pad overflow-hidden border-t border-line">
-  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[420px] bg-[radial-gradient(50%_70%_at_50%_100%,rgb(201_162_39/0.16),transparent_70%)]" aria-hidden="true"></div>
+<section id="partner" aria-labelledby="partner-heading" class="relative overflow-hidden">
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[460px] bg-[radial-gradient(45%_75%_at_50%_100%,rgb(201_162_39/0.14),transparent_70%)]" aria-hidden="true"></div>
   <div class="container-page relative">
-    <SectionHeading eyebrow={c.partner.eyebrow} heading={c.partner.heading} headingId="partner-heading" intro={c.partner.body} />
+    <div class="frame frame-top frame-pad section-pad pb-14! lg:pb-20!">
+      <SectionHeading index="07" eyebrow={c.partner.eyebrow} heading={c.partner.heading} headingId="partner-heading" intro={c.partner.body} />
+    </div>
 
-    <ul class="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+    <!-- Each row jumps to the form with the matching "I am a" option selected. -->
+    <ul class="frame border-t border-line">
       {
         c.partner.audiences.map((a, i) => (
-          <li class="card flex flex-col p-5 sm:p-6" data-reveal style={`--reveal-i:${i}`}>
-            <h3 class="font-mono text-h3 font-medium">{a.title}</h3>
-            <p class="mt-3 text-small text-fg-2">{a.body}</p>
+          <li class="border-b border-line" data-reveal style={`--reveal-i:${i}`}>
+            <a href={c.partner.cta.href} data-role={a.role} class="audience grid gap-2 py-7 md:grid-cols-12 md:items-baseline md:gap-x-8 md:px-6 lg:px-8">
+              <h3 class="font-mono text-h3 font-medium md:col-span-5">{a.title}</h3>
+              <p class="text-fg-2 md:col-span-6">{a.body}</p>
+              <span class="audience-go hidden justify-self-end text-muted md:col-span-1 md:flex" aria-hidden="true">
+                <Arrow />
+              </span>
+            </a>
           </li>
         ))
       }
     </ul>
 
-    <div class="mt-12" data-reveal>
+    <div class="frame frame-pad py-12 lg:py-16" data-reveal>
       <a href={c.partner.cta.href} class="btn btn-gold h-12 px-6">
         {c.partner.cta.label}
         <Arrow direction="down" />
@@ -33,3 +41,12 @@ const { c } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('a[data-role]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const select = document.getElementById('cf-role') as HTMLSelectElement | null;
+      if (select && link.dataset.role) select.value = link.dataset.role;
+    });
+  });
+</script>

@@ -1,7 +1,6 @@
 ---
 import type { SiteContent } from '../content/site';
 import { HONEYPOT_FIELD, LIMITS } from '../lib/contact';
-import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   c: SiteContent;
@@ -19,11 +18,12 @@ const messages = {
 };
 ---
 
-<section id="contact" aria-labelledby="contact-heading" class="section-pad border-t border-line">
+<section id="contact" aria-labelledby="contact-heading">
   <div class="container-page">
-    <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
+    <div class="frame frame-top frame-pad section-pad grid gap-12 lg:grid-cols-12 lg:gap-x-8">
       <div class="lg:col-span-4">
-        <SectionHeading eyebrow={c.contact.eyebrow} heading={c.contact.heading} headingId="contact-heading" />
+        <p class="eyebrow flex gap-3 text-muted"><span class="text-gold">08</span><span>{c.contact.eyebrow}</span></p>
+        <h2 id="contact-heading" class="mono-heading mt-6 text-h2 text-fg">{c.contact.heading}</h2>
       </div>
 
       <form
@@ -31,7 +31,7 @@ const messages = {
         action="/api/contact"
         method="post"
         novalidate
-        class="card grid gap-x-5 gap-y-6 p-5 sm:p-7 md:grid-cols-2 lg:col-span-7 lg:col-start-6"
+        class="grid gap-x-5 gap-y-6 md:grid-cols-2 lg:col-span-8 lg:col-start-5"
         data-messages={JSON.stringify(messages)}
         data-reveal
       >

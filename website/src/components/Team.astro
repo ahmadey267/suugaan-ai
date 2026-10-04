@@ -15,32 +15,34 @@ const initials = (name: string) =>
     .join('');
 ---
 
-<section id="team" aria-labelledby="team-heading" class="section-pad border-t border-line">
+<section id="team" aria-labelledby="team-heading">
   <div class="container-page">
-    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
-
-    <ul class="mt-14 grid gap-4 md:grid-cols-2 lg:mt-16">
+    <div class="frame frame-top frame-pad section-pad pb-14! lg:pb-20!">
+      <SectionHeading index="06" eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
+    </div>
+    <ul class="frame grid border-t border-line md:grid-cols-2">
       {
         c.team.founders.map((f, i) => (
-          <li class="card flex flex-col gap-6 p-5 sm:flex-row sm:p-6" data-reveal style={`--reveal-i:${i}`}>
+          <li class:list={['flex gap-5 py-8 md:px-6 lg:gap-8 lg:px-8 lg:py-10', i > 0 && 'border-t border-line md:border-t-0 md:border-l']} data-reveal style={`--reveal-i:${i}`}>
             {f.photo ? (
-              <img src={f.photo} alt={f.name} width="320" height="400" loading="lazy" decoding="async" class="aspect-[4/5] w-32 shrink-0 rounded-md object-cover sm:w-40" />
+              <img src={f.photo} alt={f.name} width="240" height="300" loading="lazy" decoding="async" class="aspect-[4/5] w-24 shrink-0 object-cover sm:w-32" />
             ) : (
-              <div class="flex aspect-[4/5] w-32 shrink-0 flex-col justify-between rounded-md border border-line bg-bg p-3 sm:w-40" data-placeholder="founder-photo">
-                <span aria-hidden="true" class="font-mono text-[2.5rem] leading-none tracking-[-0.06em] text-gold">{initials(f.name)}</span>
-                <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
+              <div class="flex aspect-[4/5] w-24 shrink-0 flex-col justify-between border border-line bg-surface p-2.5 sm:w-32" data-placeholder="founder-photo">
+                <span aria-hidden="true" class="font-mono text-[2rem] leading-none tracking-[-0.06em] text-gold">{initials(f.name)}</span>
+                <span class="font-mono text-[0.5625rem] leading-tight tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
               </div>
             )}
-            <div>
-              <h3 class="font-mono text-[1.25rem] leading-snug font-medium tracking-[-0.02em]">{f.name}</h3>
-              <p class="eyebrow mt-2 text-gold">{f.role}</p>
+            <div class="min-w-0">
+              <h3 class="font-mono text-[1.25rem] leading-snug font-medium tracking-[-0.03em]">{f.name}</h3>
+              <p class="eyebrow mt-1.5 text-gold">{f.role}</p>
               <p class="mt-4 text-small text-fg-2">{f.bio}</p>
             </div>
           </li>
         ))
       }
     </ul>
-
-    <p class="mt-10 max-w-[64ch] text-fg-2" data-reveal>{c.team.note}</p>
+    <div class="frame frame-pad border-t border-line py-8" data-reveal>
+      <p class="max-w-[64ch] text-small text-fg-2">{c.team.note}</p>
+    </div>
   </div>
 </section>

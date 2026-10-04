@@ -78,7 +78,7 @@
   --color-fg: #f2f0ea;
   --color-fg-2: #c4c7cc;
   --color-muted: #9aa0a8;
-  --color-dim: #6e737c;
+  --color-dim: #787d86;
   /* Accent */
   --color-gold: #c9a227;
   --color-gold-hover: #d9b440;
@@ -447,6 +447,81 @@
   50% {
     opacity: 0;
   }
+}
+
+
+/* ---------- Frame: one set of guide lines down the page ---------- */
+
+.frame {
+  position: relative;
+}
+@media (min-width: 768px) {
+  .frame {
+    border-inline: 1px solid var(--color-line);
+  }
+}
+/* Crosshair marks where a section's top edge meets the guide lines. */
+.frame-top {
+  border-top: 1px solid var(--color-line);
+}
+@media (min-width: 768px) {
+  .frame-top::before,
+  .frame-top::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    width: 11px;
+    height: 11px;
+    background:
+      linear-gradient(var(--color-gold), var(--color-gold)) center / 1px 100% no-repeat,
+      linear-gradient(var(--color-gold), var(--color-gold)) center / 100% 1px no-repeat;
+    opacity: 0.7;
+  }
+  .frame-top::before {
+    left: -6px;
+  }
+  .frame-top::after {
+    right: -6px;
+  }
+}
+.frame-pad {
+  padding-inline: 0;
+}
+@media (min-width: 768px) {
+  .frame-pad {
+    padding-inline: 40px;
+  }
+}
+@media (min-width: 1024px) {
+  .frame-pad {
+    padding-inline: 56px;
+  }
+}
+
+/* Diagonal hatch for work in progress. */
+.hatch {
+  background: repeating-linear-gradient(-45deg, var(--color-gold) 0 2px, transparent 2px 7px);
+}
+/* Ruler ticks along a track. */
+.ticks {
+  background: repeating-linear-gradient(90deg, var(--color-line-strong) 0 1px, transparent 1px 12.5%);
+}
+
+/* Partner rows */
+.audience {
+  transition: background-color 150ms ease;
+}
+.audience:hover {
+  background-color: var(--color-surface);
+}
+.audience:hover .audience-go {
+  color: var(--color-gold);
+  transform: translateX(3px);
+}
+.audience-go {
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
 }
 
 /* ---------- Motion ---------- */

@@ -2,6 +2,10 @@
 
 The marketing site for Sugan AI. One static page, nine sections, built with Astro and Tailwind CSS, deployed to Cloudflare Pages. It lives in the `website/` folder of the `suugaan-ai` repository, next to the translation API and training code.
 
+## Design direction
+
+The live design is dark and technical, chosen by Ahmed after reviewing the Achilles and Message Framer templates. It replaces the light editorial direction in `design-spec.md`, which is kept as the record of the original research and spec. Tokens for the current design are at the top of `src/styles/global.css`.
+
 ## 1. Run it locally
 
 Requires Node 22.12 or newer.
@@ -105,8 +109,8 @@ Checked on the Cloudflare local runtime (`wrangler pages dev`) with Chromium.
 
 | Check | Result |
 | --- | --- |
-| Lighthouse, mobile | Performance 100, Accessibility 100, Best Practices 100, SEO 100. LCP 1.3s, CLS 0 |
-| Lighthouse, desktop | 100, 100, 100, 100. LCP 0.3s, CLS 0 |
+| Lighthouse, mobile | Performance 99, Accessibility 100, Best Practices 100, SEO 100. LCP 2.0s, CLS 0 (local static server without compression) |
+| Lighthouse, desktop | 100, 100, 100, 100. LCP 0.4s, CLS 0 |
 | Widths 360, 768, 1280, 1440 | No horizontal scroll, every section checked visually |
 | Keyboard | Skip link is the first tab stop, visible focus everywhere, menu opens and closes with Escape and returns focus |
 | Reduced motion | Reveals and smooth scroll disabled |
