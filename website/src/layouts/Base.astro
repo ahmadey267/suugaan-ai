@@ -28,7 +28,7 @@ const ogLocale = c.locale === 'so' ? 'so_SO' : 'en_GB';
     <link rel="canonical" href={canonical} />
     {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
     <link rel="alternate" hreflang="x-default" href={new URL('/', site).toString()} />
-    <meta name="theme-color" content="#FAF8F3" />
+    <meta name="theme-color" content="#070A0F" />
 
     <link rel="preload" href="/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -59,7 +59,7 @@ const ogLocale = c.locale === 'so' ? 'so_SO' : 'en_GB';
   <body>
     <a
       href="#main"
-      class="sr-only z-[60] rounded-sm bg-ink px-4 py-3 text-small text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      class="sr-only z-[60] rounded-sm bg-gold px-4 py-3 text-small text-ink focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
     >
       {c.ui.skipToContent}
     </a>

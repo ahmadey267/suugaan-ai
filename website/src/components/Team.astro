@@ -15,42 +15,32 @@ const initials = (name: string) =>
     .join('');
 ---
 
-<section id="team" aria-labelledby="team-heading" class="section-pad bg-paper-2">
+<section id="team" aria-labelledby="team-heading" class="section-pad border-t border-line">
   <div class="container-page">
-    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" wide />
+    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
 
-    <ul class="mt-14 grid gap-14 md:grid-cols-2 md:gap-x-8 lg:mt-20">
+    <ul class="mt-14 grid gap-4 md:grid-cols-2 lg:mt-16">
       {
         c.team.founders.map((f, i) => (
-          <li data-reveal style={`--reveal-i:${i}`}>
+          <li class="card flex flex-col gap-6 p-5 sm:flex-row sm:p-6" data-reveal style={`--reveal-i:${i}`}>
             {f.photo ? (
-              <img
-                src={f.photo}
-                alt={f.name}
-                width="560"
-                height="420"
-                loading="lazy"
-                decoding="async"
-                class="aspect-[4/3] w-full object-cover"
-              />
+              <img src={f.photo} alt={f.name} width="320" height="400" loading="lazy" decoding="async" class="aspect-[4/5] w-32 shrink-0 rounded-md object-cover sm:w-40" />
             ) : (
-              <div class="relative flex aspect-[4/3] w-full items-end justify-between bg-ink p-5" data-placeholder="founder-photo">
-                <span aria-hidden="true" class="text-[clamp(4rem,3rem+5vw,8rem)] leading-none font-light tracking-[-0.04em] text-gold">
-                  {initials(f.name)}
-                </span>
-                <span class="eyebrow text-on-dark-muted">{c.ui.photoPlaceholder}</span>
+              <div class="flex aspect-[4/5] w-32 shrink-0 flex-col justify-between rounded-md border border-line bg-bg p-3 sm:w-40" data-placeholder="founder-photo">
+                <span aria-hidden="true" class="font-mono text-[2.5rem] leading-none tracking-[-0.06em] text-gold">{initials(f.name)}</span>
+                <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
               </div>
             )}
-            <h3 class="mt-6 text-[clamp(1.5rem,1.2rem+1.2vw,2.25rem)] leading-tight font-light tracking-[-0.02em] text-ink">
-              {f.name}
-            </h3>
-            <p class="eyebrow mt-2 text-gold-ink">{f.role}</p>
-            <p class="mt-4 max-w-[48ch]">{f.bio}</p>
+            <div>
+              <h3 class="font-mono text-[1.25rem] leading-snug font-medium tracking-[-0.02em]">{f.name}</h3>
+              <p class="eyebrow mt-2 text-gold">{f.role}</p>
+              <p class="mt-4 text-small text-fg-2">{f.bio}</p>
+            </div>
           </li>
         ))
       }
     </ul>
 
-    <p class="mt-16 max-w-[60ch] border-t border-line-strong/50 pt-6 text-ink lg:mt-20" data-reveal>{c.team.note}</p>
+    <p class="mt-10 max-w-[64ch] text-fg-2" data-reveal>{c.team.note}</p>
   </div>
 </section>

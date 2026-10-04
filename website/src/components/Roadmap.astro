@@ -11,54 +11,39 @@ const { c } = Astro.props;
 const current = currentPhase(c);
 ---
 
-<section id="roadmap" aria-labelledby="roadmap-heading" class="section-pad bg-paper-2">
+<section id="roadmap" aria-labelledby="roadmap-heading" class="section-pad border-t border-line">
   <div class="container-page">
-    <SectionHeading eyebrow={c.roadmap.eyebrow} heading={c.roadmap.heading} headingId="roadmap-heading" />
+    <SectionHeading eyebrow={c.roadmap.eyebrow} heading={c.roadmap.heading} headingId="roadmap-heading" intro={c.roadmap.note} />
 
-    <ol class="mt-14 grid gap-px border border-line-strong/40 bg-line-strong/40 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+    <ol class="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
       {
         c.roadmap.phases.map((p, i) => {
           const isCurrent = p.number === current.number;
           return (
             <li
               class:list={[
-                'flex min-h-[18rem] flex-col p-6 lg:min-h-[22rem] lg:p-7',
-                isCurrent ? 'on-dark bg-ink text-on-dark-muted' : 'bg-paper-2 text-ink-2',
+                'card flex min-h-[17rem] flex-col p-5 sm:p-6',
+                isCurrent && 'border-gold/50! bg-[linear-gradient(180deg,rgb(201_162_39/0.10),transparent_60%)] shadow-[0_0_60px_-20px_rgb(201_162_39/0.45)]',
               ]}
               aria-current={isCurrent ? 'step' : undefined}
               data-reveal
               style={`--reveal-i:${i}`}
             >
-              <span
-                aria-hidden="true"
-                class:list={[
-                  'text-[clamp(3.5rem,2.6rem+3vw,5.5rem)] leading-none font-light tracking-[-0.04em] tabular-nums',
-                  isCurrent ? 'text-gold' : 'text-ink/25',
-                ]}
-              >
-                {p.number}
+              <div class="flex items-center justify-between gap-3">
+                <span class="eyebrow text-muted">
+                  {c.ui.phaseWord} {p.number}
+                </span>
+                <StatusPill status={p.status} label={c.ui.statusLabels[p.status]} />
+              </div>
+              <span aria-hidden="true" class:list={['mt-8 font-mono text-[3.5rem] leading-none tracking-[-0.06em] tabular-nums', isCurrent ? 'text-gold' : 'text-line-strong']}>
+                0{p.number}
               </span>
-              <h3 class:list={['mt-8 text-h3 font-medium', isCurrent ? 'text-on-dark!' : 'text-ink']}>
-                <span class="sr-only">{c.ui.phaseWord} {p.number}. </span>
-                {p.name}
-              </h3>
-              <p class="mt-3 text-small">{p.focus}</p>
-              <p class="mt-auto pt-8">
-                {isCurrent ? (
-                  <span class="eyebrow inline-flex h-6 items-center gap-2 rounded-full border border-gold px-2.5 text-gold">
-                    <span class="size-1.5 rounded-full bg-gold" aria-hidden="true" />
-                    {c.ui.statusLabels[p.status]}
-                  </span>
-                ) : (
-                  <StatusPill status={p.status} label={c.ui.statusLabels[p.status]} />
-                )}
-              </p>
+              <h3 class="mt-auto pt-8 font-mono text-h3 font-medium">{p.name}</h3>
+              <p class="mt-2 text-small text-fg-2">{p.focus}</p>
             </li>
           );
         })
       }
     </ol>
-
-    <p class="mt-10 max-w-[48ch] text-lead text-ink" data-reveal>{c.roadmap.note}</p>
   </div>
 </section>

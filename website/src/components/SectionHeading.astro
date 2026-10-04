@@ -3,22 +3,19 @@ interface Props {
   eyebrow: string;
   heading: string;
   headingId: string;
-  dark?: boolean;
-  wide?: boolean;
+  intro?: string;
+  center?: boolean;
 }
-const { eyebrow, heading, headingId, dark = false, wide = false } = Astro.props;
+const { eyebrow, heading, headingId, intro, center = false } = Astro.props;
+// First sentence bright, the rest dimmed: "More than 20 million speakers." + "Almost no AI built for them."
+const [first, ...rest] = heading.split(/(?<=\.)\s+/);
 ---
 
-<div data-reveal>
-  <p class:list={['eyebrow', dark ? 'text-gold' : 'text-gold-ink']}>{eyebrow}</p>
-  <h2
-    id={headingId}
-    class:list={[
-      'mt-5 font-light',
-      wide ? 'max-w-[22ch] text-h2-lg' : 'max-w-[16ch] text-h2',
-      dark ? 'text-on-dark' : 'text-ink',
-    ]}
-  >
-    {heading}
+<div data-reveal class:list={[center && 'mx-auto text-center']}>
+  <p class="eyebrow text-gold">[{eyebrow}]</p>
+  <h2 id={headingId} class:list={['mono-heading mt-5 max-w-[22ch] text-h2 text-fg', center && 'mx-auto']}>
+    {first}
+    {rest.length > 0 && <span class="text-dim"> {rest.join(' ')}</span>}
   </h2>
+  {intro && <p class:list={['mt-6 max-w-[52ch] text-lead text-fg-2', center && 'mx-auto']}>{intro}</p>}
 </div>

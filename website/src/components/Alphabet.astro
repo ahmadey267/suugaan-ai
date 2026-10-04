@@ -23,32 +23,32 @@ const cells = [
 ---
 
 <figure class="alphabet" aria-label={label}>
-  <ol class="grid grid-cols-7 border-t border-l border-line-dark" aria-hidden="true">
+  <ol class="grid grid-cols-7 border-t border-l border-line" aria-hidden="true">
     {
       cells.map((cell, i) => (
         <li
           class:list={[
-            'alpha-cell relative flex aspect-square flex-col justify-between border-r border-b border-line-dark p-1.5 sm:p-2.5',
-            cell.kind === 'vowel' && 'bg-white/[0.035]',
+            'alpha-cell relative flex aspect-square flex-col justify-between border-r border-b border-line p-1.5 sm:p-2.5',
+            cell.kind === 'vowel' && 'bg-surface-2',
           ]}
           style={`--i:${i}`}
         >
           <span
             class:list={[
               'text-[clamp(1.25rem,0.6rem+2.6vw,2.25rem)] leading-none font-light tracking-[-0.02em]',
-              cell.kind === 'distinct' ? 'text-gold' : 'text-on-dark',
+              cell.kind === 'distinct' ? 'text-gold' : 'text-fg',
             ]}
           >
             {cell.l}
           </span>
-          <span class="self-end font-mono text-[0.625rem] leading-none text-on-dark-muted sm:text-[0.6875rem]">
+          <span class="self-end font-mono text-[0.625rem] leading-none text-muted sm:text-[0.6875rem]">
             /{cell.ipa}/
           </span>
         </li>
       ))
     }
-    <li class="border-r border-b border-line-dark" />
-    <li class="border-r border-b border-line-dark" />
+    <li class="border-r border-b border-line" />
+    <li class="border-r border-b border-line" />
   </ol>
-  <figcaption class="mt-4 text-small text-on-dark-muted">{caption}</figcaption>
+  <figcaption class="mt-4 text-small text-muted">{caption}</figcaption>
 </figure>

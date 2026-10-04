@@ -7,19 +7,14 @@ interface Props {
 }
 const { status, label } = Astro.props;
 const styles: Record<PhaseStatus, string> = {
-  'in-progress': 'border-gold text-gold-ink',
-  next: 'border-line-strong text-ink-2',
+  'in-progress': 'border-gold/60 bg-gold-soft text-gold',
+  next: 'border-line-strong text-fg-2',
   planned: 'border-line text-muted',
-  done: 'border-ink text-ink',
+  done: 'border-success/60 text-success',
 };
 ---
 
-<span
-  class:list={[
-    'eyebrow inline-flex h-6 items-center gap-2 rounded-full border bg-transparent px-2.5 whitespace-nowrap',
-    styles[status],
-  ]}
->
+<span class:list={['eyebrow inline-flex h-6 items-center gap-2 rounded-[3px] border px-2 whitespace-nowrap', styles[status]]}>
   {status === 'in-progress' && <span class="size-1.5 rounded-full bg-gold" aria-hidden="true" />}
   {label}
 </span>

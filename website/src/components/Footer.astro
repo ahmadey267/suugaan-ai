@@ -1,46 +1,37 @@
 ---
 import type { SiteContent } from '../content/site';
+import Logo from './Logo.astro';
 
 interface Props {
   c: SiteContent;
 }
 const { c } = Astro.props;
-const linkClass =
-  'text-on-dark underline decoration-transparent decoration-1 underline-offset-[0.35em] transition-colors duration-150 hover:decoration-gold';
+const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors duration-150 hover:text-gold';
 ---
 
-<footer class="on-dark bg-ink py-16 text-small text-on-dark-muted lg:py-24">
+<footer class="border-t border-line py-14 text-small text-muted lg:py-20">
   <div class="container-page">
-    <div class="grid gap-6 lg:grid-cols-12 lg:gap-x-8">
-      <p class="text-[1.125rem] font-medium tracking-[-0.01em] text-on-dark lg:col-span-4" data-placeholder="logo">
-        {c.footer.name}
-      </p>
-      <p class="max-w-[48ch] lg:col-span-7 lg:col-start-6">{c.footer.line}</p>
-    </div>
-
-    <div class="mt-12 flex flex-col gap-6 border-t border-line-dark pt-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      <div class="max-w-[40ch]">
+        <p class="flex items-center gap-2.5 text-fg" data-placeholder="logo">
+          <Logo />
+          <span class="font-mono text-[0.9375rem] font-medium tracking-[-0.02em]">{c.footer.name}</span>
+        </p>
+        <p class="mt-4">{c.footer.line}</p>
+      </div>
       <ul class="flex gap-8">
         <li>
-          <a
-            href={c.links.linkedin}
-            class={linkClass}
-            data-placeholder={c.links.linkedinIsPlaceholder ? 'linkedin' : undefined}
-            rel={c.links.linkedinIsPlaceholder ? undefined : 'noopener'}
-          >
+          <a href={c.links.linkedin} class={linkClass} data-placeholder={c.links.linkedinIsPlaceholder ? 'linkedin' : undefined} rel={c.links.linkedinIsPlaceholder ? undefined : 'noopener'}>
             {c.footer.linkedin}
           </a>
         </li>
         <li>
-          <a
-            href={c.links.conceptNote}
-            class={linkClass}
-            data-placeholder={c.links.conceptNoteIsPlaceholder ? 'concept-note' : undefined}
-          >
+          <a href={c.links.conceptNote} class={linkClass} data-placeholder={c.links.conceptNoteIsPlaceholder ? 'concept-note' : undefined}>
             {c.footer.conceptNote}
           </a>
         </li>
       </ul>
-      <p>{c.footer.copyright}</p>
     </div>
+    <p class="mt-12 border-t border-line pt-6 font-mono text-[0.75rem]">{c.footer.copyright}</p>
   </div>
 </footer>

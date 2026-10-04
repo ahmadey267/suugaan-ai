@@ -3,86 +3,93 @@ import type { SiteContent } from '../content/site';
 import { currentPhase } from '../content/site';
 import Arrow from './Arrow.astro';
 import Alphabet from './Alphabet.astro';
+import StatusPill from './StatusPill.astro';
 
 interface Props {
   c: SiteContent;
 }
 const { c } = Astro.props;
 const phase = currentPhase(c);
-const phaseByNumber = new Map(c.roadmap.phases.map((p) => [p.number, p]));
+const phases = c.roadmap.phases;
+const next = phases.find((p) => p.number === phase.number + 1);
+const phaseByNumber = new Map(phases.map((p) => [p.number, p]));
 const rows = c.hero.labStatus.map((row) => ({
-  label: row.label,
+  label: row.label.toLowerCase(),
   status: phaseByNumber.get(row.phase)?.status ?? 'planned',
 }));
-// Split the final word so it can carry the accent: "AI that speaks" + "Somali."
 const words = c.hero.headline.trim().split(' ');
 const last = words.pop();
+const pad = (s: string, n: number) => s + ' '.repeat(Math.max(1, n - s.length));
 ---
 
-<section
-  id="top"
-  aria-labelledby="hero-heading"
-  class="on-dark relative -mt-(--header-h) bg-ink pt-[calc(var(--header-h)+3.5rem)] text-on-dark md:pt-[calc(var(--header-h)+5rem)] lg:pt-[calc(var(--header-h)+6.5rem)]"
->
-  <div class="container-page">
-    <h1 id="hero-heading" class="hero-title text-display font-light text-on-dark">
+<section id="top" aria-labelledby="hero-heading" class="relative overflow-hidden">
+  <div class="aurora" aria-hidden="true"></div>
+
+  <div class="container-page relative pt-20 pb-20 md:pt-28 lg:pt-36 lg:pb-28">
+    <h1 id="hero-heading" class="mono-heading max-w-[16ch] text-display text-fg">
       {words.join(' ')} <span class="text-gold">{last}</span>
     </h1>
+    <p class="mt-7 max-w-[48ch] text-lead text-fg-2">{c.hero.supporting}</p>
 
-    <div class="mt-12 grid gap-14 md:mt-16 lg:grid-cols-12 lg:gap-x-8">
-      <div class="flex flex-col lg:col-span-5">
-        <p class="max-w-[36ch] text-lead text-on-dark">{c.hero.supporting}</p>
-
-        <div class="mt-10 flex flex-wrap gap-3">
-          <a href={c.hero.primary.href} class="btn btn-gold">
-            {c.hero.primary.label}
-            <Arrow direction="down" />
-          </a>
-          <a
-            href={c.links.conceptNote}
-            class="btn btn-ghost-dark"
-            data-placeholder={c.links.conceptNoteIsPlaceholder ? 'concept-note' : undefined}
-          >
-            {c.hero.secondary.label}
-            <Arrow />
-          </a>
-        </div>
-
-        <p class="mt-8 text-small text-on-dark-muted lg:mt-auto lg:pt-10">{c.hero.small}</p>
-      </div>
-
-      <div class="lg:col-span-6 lg:col-start-7">
-        <Alphabet label={c.hero.alphabetLabel} caption={c.hero.alphabetCaption} />
-      </div>
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href={c.hero.primary.href} class="btn btn-gold">
+        {c.hero.primary.label}
+        <Arrow direction="down" />
+      </a>
+      <a href={c.links.conceptNote} class="btn btn-ghost" data-placeholder={c.links.conceptNoteIsPlaceholder ? 'concept-note' : undefined}>
+        {c.hero.secondary.label}
+        <Arrow />
+      </a>
     </div>
+    <p class="mt-6 font-mono text-[0.8125rem] text-muted">{c.hero.small}</p>
 
-    <div
-      class="mt-16 grid grid-cols-2 border-t border-line-dark md:mt-20 md:grid-cols-5"
-      role="group"
-      aria-labelledby="lab-status-heading"
-    >
-      <p id="lab-status-heading" class="eyebrow col-span-2 py-5 text-on-dark-muted md:col-span-1">
-        {c.ui.labStatus}
-      </p>
-      {
-        rows.map((row) => (
-          <p class="flex flex-col gap-1 border-t border-line-dark py-5 md:border-t-0 md:border-l md:pl-5">
-            <span class="text-small text-on-dark">{row.label}</span>
-            <span
-              class:list={[
-                'eyebrow inline-flex items-center gap-2',
-                row.status === 'in-progress' ? 'text-gold' : 'text-on-dark-muted',
-              ]}
-            >
-              {row.status === 'in-progress' && <span class="size-1.5 rounded-full bg-gold" aria-hidden="true" />}
-              {c.ui.statusLabels[row.status]}
-            </span>
+    <!-- Lab panel: everything shown comes from site.ts (roadmap statuses and the alphabet). -->
+    <div class="card relative mt-16 overflow-hidden shadow-[0_40px_120px_-40px_rgb(201_162_39/0.35)] md:mt-20" role="group" aria-labelledby="lab-status-heading">
+      <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-5">
+        <div class="flex items-center gap-3">
+          <span class="flex gap-1.5" aria-hidden="true">
+            <span class="size-2.5 rounded-full bg-line-strong"></span>
+            <span class="size-2.5 rounded-full bg-line-strong"></span>
+            <span class="size-2.5 rounded-full bg-line-strong"></span>
+          </span>
+          <p id="lab-status-heading" class="font-mono text-[0.8125rem] text-fg-2">
+            sugan-ai <span class="text-dim">/</span> {c.ui.labStatus.toLowerCase()}
           </p>
-        ))
-      }
+        </div>
+        <StatusPill status={phase.status} label={c.ui.statusLabels[phase.status]} />
+      </div>
+
+      <div class="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div class="border-b border-line p-5 sm:p-6 lg:border-r lg:border-b-0">
+          <pre class="overflow-x-auto font-mono text-code text-fg-2"><code><span class="text-gold">$</span> {c.ui.terminalCommand}
+
+<span class="text-fg">{c.ui.phaseWord.toLowerCase()} {phase.number}</span>  {phase.name.toLowerCase()}
+{rows.map((r) => (
+  <>{'  '}{pad(r.label, 12)}<span class={r.status === 'in-progress' ? 'text-gold' : 'text-muted'}>{c.ui.statusLabels[r.status].toLowerCase()}</span>{'\n'}</>
+))}
+{next && <><span class="text-muted">{c.ui.nextWord}</span>     {c.ui.phaseWord.toLowerCase()} {next.number}  {next.name.toLowerCase()}{'\n'}</>}
+<span class="text-gold">$</span> <span class="caret" aria-hidden="true"></span></code></pre>
+        </div>
+        <div class="p-5 sm:p-6">
+          <Alphabet label={c.hero.alphabetLabel} caption={c.hero.alphabetCaption} />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 border-t border-line px-4 py-3 sm:px-5" aria-hidden="true">
+        <span class="font-mono text-[0.75rem] text-muted tabular-nums">{c.ui.phaseWord.toLowerCase()} {phase.number}/{phases.length}</span>
+        <span class="grid flex-1 grid-cols-4 gap-1.5">
+          {
+            phases.map((p) => (
+              <span
+                class:list={[
+                  'h-1 rounded-full',
+                  p.status === 'done' ? 'bg-gold' : p.number === phase.number ? 'bg-gold/70' : 'bg-line-strong',
+                ]}
+              />
+            ))
+          }
+        </span>
+      </div>
     </div>
-    <p class="sr-only">
-      {c.ui.phaseWord} {phase.number}. {phase.name}: {c.ui.statusLabels[phase.status]}
-    </p>
   </div>
 </section>

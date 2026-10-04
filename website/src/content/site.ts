@@ -46,6 +46,10 @@ export interface SiteContent {
     required: string;
     selectPlaceholder: string;
     honeypotLabel: string;
+    terminalCommand: string;
+    nextWord: string;
+    pending: string;
+    benchColumns: [string, string, string];
     sending: string;
   };
   nav: {
@@ -72,7 +76,9 @@ export interface SiteContent {
   build: {
     eyebrow: string;
     heading: string;
-    blocks: Item[];
+    /** Each block's small panel only restates what its body says. No invented output. */
+    blocks: (Item & { detail: string[] })[];
+    dataTags: string[];
     closing: string;
   };
   approach: {
@@ -168,6 +174,10 @@ const en: SiteContent = {
     required: '(required)',
     selectPlaceholder: 'Select',
     honeypotLabel: 'Leave this field empty',
+    terminalCommand: 'sugan status',
+    nextWord: 'next',
+    pending: 'pending',
+    benchColumns: ['task', 'metric', 'native speakers'],
     sending: 'Sending',
   },
   nav: {
@@ -225,20 +235,25 @@ const en: SiteContent = {
       {
         title: 'Data.',
         body: 'A curated Somali corpus drawn from government documents, news, literature and religious texts. Cleaned, tagged by dialect and domain, with clear provenance.',
+        detail: ['government', 'news', 'literature', 'religious'],
       },
       {
         title: 'Models.',
         body: 'Efficient open weight models adapted for Somali. Small enough to run locally, offline and on modest hardware.',
+        detail: ['open weights', 'runs locally', 'works offline', 'modest hardware'],
       },
       {
         title: 'Benchmark.',
         body: 'A public evaluation suite for Somali covering translation, comprehension and formal writing, scored by both metrics and native speakers.',
+        detail: ['translation', 'comprehension', 'formal writing'],
       },
       {
         title: 'Voice.',
         body: 'Speech recognition for Somali, so people can use AI the way they already communicate.',
+        detail: [],
       },
     ],
+    dataTags: ['dialect', 'domain', 'provenance'],
     closing: 'We publish what we measure. Every model we release comes with its scores.',
   },
   approach: {

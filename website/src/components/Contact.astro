@@ -19,7 +19,7 @@ const messages = {
 };
 ---
 
-<section id="contact" aria-labelledby="contact-heading" class="section-pad bg-paper-2">
+<section id="contact" aria-labelledby="contact-heading" class="section-pad border-t border-line">
   <div class="container-page">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
       <div class="lg:col-span-4">
@@ -31,12 +31,12 @@ const messages = {
         action="/api/contact"
         method="post"
         novalidate
-        class="grid gap-x-6 gap-y-7 md:grid-cols-2 lg:col-span-7 lg:col-start-6 lg:mt-[54px]"
+        class="card grid gap-x-5 gap-y-6 p-5 sm:p-7 md:grid-cols-2 lg:col-span-7 lg:col-start-6"
         data-messages={JSON.stringify(messages)}
         data-reveal
       >
         <div>
-          <label for="cf-name" class="block text-small font-medium text-ink">
+          <label for="cf-name" class="block font-mono text-[0.8125rem] font-medium text-fg">
             {f.name} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength={LIMITS.name} class="field-input mt-2" aria-describedby="cf-name-error" />
@@ -44,13 +44,13 @@ const messages = {
         </div>
 
         <div>
-          <label for="cf-organisation" class="block text-small font-medium text-ink">{f.organisation}</label>
+          <label for="cf-organisation" class="block font-mono text-[0.8125rem] font-medium text-fg">{f.organisation}</label>
           <input id="cf-organisation" name="organisation" type="text" autocomplete="organization" maxlength={LIMITS.organisation} class="field-input mt-2" aria-describedby="cf-organisation-error" />
           <p id="cf-organisation-error" class="mt-2 hidden text-small text-error" data-error-for="organisation"></p>
         </div>
 
         <div>
-          <label for="cf-email" class="block text-small font-medium text-ink">
+          <label for="cf-email" class="block font-mono text-[0.8125rem] font-medium text-fg">
             {f.email} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength={LIMITS.email} class="field-input mt-2" aria-describedby="cf-email-error" />
@@ -58,7 +58,7 @@ const messages = {
         </div>
 
         <div>
-          <label for="cf-role" class="block text-small font-medium text-ink">
+          <label for="cf-role" class="block font-mono text-[0.8125rem] font-medium text-fg">
             {f.role} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <select id="cf-role" name="role" required class="field-input mt-2" aria-describedby="cf-role-error">
@@ -69,7 +69,7 @@ const messages = {
         </div>
 
         <div class="md:col-span-2">
-          <label for="cf-message" class="block text-small font-medium text-ink">
+          <label for="cf-message" class="block font-mono text-[0.8125rem] font-medium text-fg">
             {f.message} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <textarea id="cf-message" name="message" required maxlength={LIMITS.message} rows="6" class="field-input mt-2" aria-describedby="cf-message-error"></textarea>
@@ -82,7 +82,7 @@ const messages = {
         </div>
 
         <div class="flex flex-col items-start gap-4 md:col-span-2">
-          <button type="submit" class="btn btn-primary">{c.contact.submit}</button>
+          <button type="submit" class="btn btn-gold">{c.contact.submit}</button>
           <p id="contact-status" role="status" aria-live="polite" class="min-h-[1.55em] text-small"></p>
         </div>
       </form>

@@ -1,5 +1,6 @@
 ---
 import type { SiteContent } from '../content/site';
+import Logo from './Logo.astro';
 
 interface Props {
   c: SiteContent;
@@ -7,18 +8,19 @@ interface Props {
 const { c } = Astro.props;
 ---
 
-<header id="site-header" class="site-header sticky top-0 z-50 h-(--header-h)" data-tone="dark">
+<header id="site-header" class="site-header sticky top-0 z-50 h-(--header-h)">
   <div class="container-page flex h-full items-center justify-between gap-4">
-    <a href="#top" class="hdr-fg text-[1.125rem] font-medium tracking-[-0.01em] no-underline" data-placeholder="logo">
-      {c.meta.siteName}
+    <a href="#top" class="flex items-center gap-2.5 text-fg no-underline" data-placeholder="logo">
+      <Logo />
+      <span class="font-mono text-[0.9375rem] font-medium tracking-[-0.02em]">{c.meta.siteName}</span>
     </a>
 
     <nav aria-label={c.ui.primaryNavLabel} class="hidden lg:block">
-      <ul class="flex items-center gap-8">
+      <ul class="flex items-center gap-7">
         {
           c.nav.items.map((item) => (
             <li>
-              <a href={item.href} class="hdr-link text-small">
+              <a href={item.href} class="font-mono text-[0.8125rem] text-muted transition-colors duration-150 hover:text-fg">
                 {item.label}
               </a>
             </li>
@@ -31,7 +33,7 @@ const { c } = Astro.props;
       <button
         type="button"
         id="menu-toggle"
-        class="hdr-fg btn btn-sm px-3 lg:hidden"
+        class="btn btn-sm btn-ghost lg:hidden"
         aria-expanded="false"
         aria-controls="mobile-menu"
         data-label-open={c.ui.menuOpen}
@@ -39,20 +41,20 @@ const { c } = Astro.props;
       >
         {c.ui.menuOpen}
       </button>
-      <a href={c.nav.cta.href} class="hdr-cta btn btn-sm">{c.nav.cta.label}</a>
+      <a href={c.nav.cta.href} class="btn btn-sm btn-gold">{c.nav.cta.label}</a>
     </div>
   </div>
 
   <nav
     id="mobile-menu"
     aria-label={c.ui.primaryNavLabel}
-    class="absolute inset-x-0 top-full hidden border-b border-line bg-paper lg:hidden"
+    class="absolute inset-x-0 top-full hidden border-b border-line bg-bg lg:hidden"
   >
-    <ul class="container-page flex flex-col py-4">
+    <ul class="container-page flex flex-col py-3">
       {
         c.nav.items.map((item) => (
           <li class="border-t border-line first:border-t-0">
-            <a href={item.href} class="block py-4 text-lead text-ink">
+            <a href={item.href} class="block py-4 font-mono text-fg">
               {item.label}
             </a>
           </li>
@@ -63,42 +65,18 @@ const { c } = Astro.props;
 </header>
 
 <script>
-  const header = document.getElementById('site-header');
   const toggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
-  const hero = document.getElementById('top');
 
-  if (header && hero && 'IntersectionObserver' in window) {
-    // Dark header while it sits over the dark hero, light once past it.
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (toggle?.getAttribute('aria-expanded') === 'true') return;
-        header.dataset.tone = entry.isIntersecting ? 'dark' : 'light';
-      },
-      { rootMargin: `-${header.offsetHeight}px 0px 0px 0px`, threshold: 0 },
-    );
-    io.observe(hero);
-  }
-
-  if (toggle && menu && header) {
-    let toneBeforeMenu = header.dataset.tone;
+  if (toggle && menu) {
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
       toggle.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
       menu.classList.toggle('hidden', !open);
-      if (open) {
-        toneBeforeMenu = header.dataset.tone;
-        header.dataset.tone = 'light';
-      } else if (toneBeforeMenu) {
-        header.dataset.tone = toneBeforeMenu;
-      }
     };
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
     menu.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a')) {
-        toneBeforeMenu = undefined;
-        setOpen(false);
-      }
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
