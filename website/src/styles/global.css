@@ -22,6 +22,25 @@
     U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* IPA symbols in the hero alphabet (ħ ʃ ɖ ʕ ʒ) and Greek chi (χ). Loaded only when used. */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-latin-ext.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-greek.woff2') format('woff2-variations');
+  unicode-range: U+0370-03FF;
+}
+
 /* Metric matched fallbacks so the font swap does not shift layout. */
 @font-face {
   font-family: 'Outfit Fallback';
@@ -74,6 +93,9 @@
   --text-h2: clamp(2rem, 1.35rem + 2.9vw, 3.5rem);
   --text-h2--line-height: 1.08;
   --text-h2--letter-spacing: -0.025em;
+  --text-h2-lg: clamp(2.25rem, 1.2rem + 4.4vw, 4.75rem);
+  --text-h2-lg--line-height: 1.04;
+  --text-h2-lg--letter-spacing: -0.03em;
   --text-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
   --text-h3--line-height: 1.25;
   --text-h3--letter-spacing: -0.01em;
@@ -253,6 +275,14 @@
   .btn-gold:hover {
     background: var(--color-gold-hover);
   }
+  .btn-ghost-dark {
+    background: transparent;
+    color: var(--color-on-dark);
+    border-color: var(--color-line-dark);
+  }
+  .btn-ghost-dark:hover {
+    border-color: var(--color-on-dark);
+  }
   .btn .arrow {
     transition: transform 150ms ease;
   }
@@ -305,6 +335,96 @@
   }
 }
 
+/* ---------- Header tones ---------- */
+
+.site-header {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+  border-bottom: 1px solid transparent;
+}
+.site-header[data-tone='dark'] {
+  background: var(--color-ink);
+  border-color: var(--color-line-dark);
+}
+.site-header[data-tone='light'] {
+  background: rgb(250 248 243 / 0.94);
+  border-color: var(--color-line);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .site-header[data-tone='light'] {
+    background: rgb(250 248 243 / 0.82);
+    backdrop-filter: blur(10px);
+  }
+}
+.site-header[data-tone='dark'] .hdr-fg {
+  color: var(--color-on-dark);
+}
+.site-header[data-tone='light'] .hdr-fg {
+  color: var(--color-ink);
+}
+.site-header .hdr-link {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4em;
+  transition:
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+}
+.site-header .hdr-link:hover {
+  text-decoration-color: var(--color-gold);
+}
+.site-header[data-tone='dark'] .hdr-link {
+  color: var(--color-on-dark-muted);
+}
+.site-header[data-tone='dark'] .hdr-link:hover {
+  color: var(--color-on-dark);
+}
+.site-header[data-tone='light'] .hdr-link {
+  color: var(--color-ink-2);
+}
+.site-header[data-tone='light'] .hdr-link:hover {
+  color: var(--color-ink);
+}
+.site-header[data-tone='dark'] .hdr-cta {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+.site-header[data-tone='dark'] .hdr-cta:hover {
+  background: var(--color-gold-hover);
+}
+.site-header[data-tone='light'] .hdr-cta {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+.site-header[data-tone='light'] .hdr-cta:hover {
+  background: var(--color-ink-hover);
+}
+.site-header[data-tone='dark'] :focus-visible {
+  outline-color: var(--color-gold);
+}
+
+/* Hero alphabet: letters settle in once on load. */
+.js .alphabet .alpha-cell {
+  animation: alpha-in 600ms var(--ease-calm) both;
+  animation-delay: calc(120ms + var(--i, 0) * 18ms);
+}
+@keyframes alpha-in {
+  from {
+    opacity: 0.12;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.alphabet .alpha-cell {
+  transition: background-color 150ms ease;
+}
+.alphabet .alpha-cell:hover {
+  background-color: rgb(201 162 39 / 0.12);
+}
+
 /* ---------- Motion (design-spec section 5) ---------- */
 
 /* Hidden state applies only once JS has run, so content never depends on JS. */
@@ -329,6 +449,9 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .js .alphabet .alpha-cell {
+    animation: none;
   }
   *,
   *::before,

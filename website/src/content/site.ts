@@ -60,6 +60,8 @@ export interface SiteContent {
     small: string;
     /** Rows in the hero lab status panel. Each row takes its status from a roadmap phase. */
     labStatus: { label: string; phase: number }[];
+    alphabetLabel: string;
+    alphabetCaption: string;
   };
   problem: {
     eyebrow: string;
@@ -190,6 +192,8 @@ const en: SiteContent = {
       { label: 'Benchmark', phase: 1 },
       { label: 'Voice', phase: 3 },
     ],
+    alphabetLabel: 'The Somali Latin alphabet: 21 consonants and 5 vowels, each shown with its sound.',
+    alphabetCaption: 'The Somali Latin alphabet. Gold letters mark sounds English does not have.',
   },
   problem: {
     eyebrow: 'The problem',

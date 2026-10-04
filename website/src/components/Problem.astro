@@ -4,32 +4,27 @@ import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   c: SiteContent;
-  index: number;
 }
-const { c, index } = Astro.props;
+const { c } = Astro.props;
 ---
 
-<section id="problem" aria-labelledby="problem-heading" class="section-pad pt-0!">
+<section id="problem" aria-labelledby="problem-heading" class="section-pad">
   <div class="container-page">
-    <div class="grid gap-10 border-t border-line pt-6 lg:grid-cols-12 lg:gap-x-8">
-      <div class="lg:col-span-4">
-        <SectionHeading index={index} eyebrow={c.problem.eyebrow} heading={c.problem.heading} headingId="problem-heading" />
-      </div>
+    <SectionHeading eyebrow={c.problem.eyebrow} heading={c.problem.heading} headingId="problem-heading" wide />
 
-      <div class="lg:col-span-7 lg:col-start-6 lg:pt-[54px]">
-        <p class="max-w-[38ch] text-lead text-ink-2" data-reveal>{c.problem.body}</p>
+    <div class="mt-14 grid gap-12 lg:mt-20 lg:grid-cols-12 lg:gap-x-8">
+      <p class="max-w-[34ch] text-lead text-ink lg:col-span-5" data-reveal>{c.problem.body}</p>
 
-        <ul class="mt-12 border-b border-line">
-          {
-            c.problem.gaps.map((gap, i) => (
-              <li class="grid gap-2 border-t border-line py-6 md:grid-cols-7 md:gap-8" data-reveal style={`--reveal-i:${i}`}>
-                <h3 class="text-h3 font-medium md:col-span-2">{gap.title}</h3>
-                <p class="max-w-[64ch] md:col-span-5">{gap.body}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+      <dl class="border-t-2 border-ink lg:col-span-6 lg:col-start-7">
+        {
+          c.problem.gaps.map((gap, i) => (
+            <div class="grid gap-2 border-b border-line py-6 sm:grid-cols-[10rem_1fr] sm:gap-6" data-reveal style={`--reveal-i:${i}`}>
+              <dt class="text-h3 font-medium text-ink">{gap.title}</dt>
+              <dd>{gap.body}</dd>
+            </div>
+          ))
+        }
+      </dl>
     </div>
   </div>
 </section>

@@ -5,9 +5,8 @@ import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   c: SiteContent;
-  index: number;
 }
-const { c, index } = Astro.props;
+const { c } = Astro.props;
 const f = c.contact.fields;
 const messages = {
   required: c.contact.validation.required,
@@ -20,11 +19,11 @@ const messages = {
 };
 ---
 
-<section id="contact" aria-labelledby="contact-heading" class="section-pad">
+<section id="contact" aria-labelledby="contact-heading" class="section-pad bg-paper-2">
   <div class="container-page">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
       <div class="lg:col-span-4">
-        <SectionHeading index={index} eyebrow={c.contact.eyebrow} heading={c.contact.heading} headingId="contact-heading" />
+        <SectionHeading eyebrow={c.contact.eyebrow} heading={c.contact.heading} headingId="contact-heading" />
       </div>
 
       <form

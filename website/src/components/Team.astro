@@ -4,49 +4,53 @@ import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   c: SiteContent;
-  index: number;
 }
-const { c, index } = Astro.props;
+const { c } = Astro.props;
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('');
 ---
 
 <section id="team" aria-labelledby="team-heading" class="section-pad bg-paper-2">
   <div class="container-page">
-    <SectionHeading index={index} eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
+    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" wide />
 
-    <ul class="mt-14 grid gap-14 md:grid-cols-2 md:gap-10 lg:mt-20 lg:gap-x-8">
+    <ul class="mt-14 grid gap-14 md:grid-cols-2 md:gap-x-8 lg:mt-20">
       {
         c.team.founders.map((f, i) => (
-          <li class="grid gap-6 sm:grid-cols-[minmax(0,180px)_1fr] sm:gap-8 lg:grid-cols-[220px_1fr]" data-reveal style={`--reveal-i:${i}`}>
+          <li data-reveal style={`--reveal-i:${i}`}>
             {f.photo ? (
               <img
                 src={f.photo}
                 alt={f.name}
-                width="440"
-                height="550"
+                width="560"
+                height="420"
                 loading="lazy"
                 decoding="async"
-                class="aspect-[4/5] w-full max-w-[160px] sm:max-w-[220px] border border-line object-cover"
+                class="aspect-[4/3] w-full object-cover"
               />
             ) : (
-              <div
-                class="flex aspect-[4/5] w-full max-w-[160px] sm:max-w-[220px] items-center justify-center border border-line bg-paper"
-                data-placeholder="founder-photo"
-              >
-                <span class="eyebrow text-muted">{c.ui.photoPlaceholder}</span>
+              <div class="relative flex aspect-[4/3] w-full items-end justify-between bg-ink p-5" data-placeholder="founder-photo">
+                <span aria-hidden="true" class="text-[clamp(4rem,3rem+5vw,8rem)] leading-none font-light tracking-[-0.04em] text-gold">
+                  {initials(f.name)}
+                </span>
+                <span class="eyebrow text-on-dark-muted">{c.ui.photoPlaceholder}</span>
               </div>
             )}
-            <div class="border-t border-ink pt-5">
-              <h3 class="text-h3 font-medium">{f.name}</h3>
-              <p class="eyebrow mt-2 text-muted">{f.role}</p>
-              <p class="mt-4 max-w-[46ch]">{f.bio}</p>
-            </div>
+            <h3 class="mt-6 text-[clamp(1.5rem,1.2rem+1.2vw,2.25rem)] leading-tight font-light tracking-[-0.02em] text-ink">
+              {f.name}
+            </h3>
+            <p class="eyebrow mt-2 text-gold-ink">{f.role}</p>
+            <p class="mt-4 max-w-[48ch]">{f.bio}</p>
           </li>
         ))
       }
     </ul>
 
-    <div class="mt-16 grid border-t border-line pt-6 lg:mt-20 lg:grid-cols-12 lg:gap-x-8" data-reveal>
-      <p class="max-w-[56ch] text-ink lg:col-span-7 lg:col-start-6">{c.team.note}</p>
-    </div>
+    <p class="mt-16 max-w-[60ch] border-t border-line-strong/50 pt-6 text-ink lg:mt-20" data-reveal>{c.team.note}</p>
   </div>
 </section>

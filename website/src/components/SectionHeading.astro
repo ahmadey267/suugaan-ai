@@ -1,23 +1,23 @@
 ---
 interface Props {
-  index: number;
   eyebrow: string;
   heading: string;
   headingId: string;
   dark?: boolean;
+  wide?: boolean;
 }
-const { index, eyebrow, heading, headingId, dark = false } = Astro.props;
-const num = String(index).padStart(2, '0');
+const { eyebrow, heading, headingId, dark = false, wide = false } = Astro.props;
 ---
 
 <div data-reveal>
-  <span class="block h-px w-6 bg-gold" aria-hidden="true"></span>
-  <p class:list={['eyebrow mt-3', dark ? 'text-on-dark-muted' : 'text-muted']}>
-    <span aria-hidden="true">{num}&nbsp;&nbsp;</span>{eyebrow}
-  </p>
+  <p class:list={['eyebrow', dark ? 'text-gold' : 'text-gold-ink']}>{eyebrow}</p>
   <h2
     id={headingId}
-    class:list={['mt-6 max-w-[18ch] text-h2 font-light', dark ? 'text-on-dark' : 'text-ink']}
+    class:list={[
+      'mt-5 font-light',
+      wide ? 'max-w-[22ch] text-h2-lg' : 'max-w-[16ch] text-h2',
+      dark ? 'text-on-dark' : 'text-ink',
+    ]}
   >
     {heading}
   </h2>
