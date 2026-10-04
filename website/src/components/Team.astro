@@ -1,0 +1,52 @@
+---
+import type { SiteContent } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  c: SiteContent;
+  index: number;
+}
+const { c, index } = Astro.props;
+---
+
+<section id="team" aria-labelledby="team-heading" class="section-pad bg-paper-2">
+  <div class="container-page">
+    <SectionHeading index={index} eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
+
+    <ul class="mt-14 grid gap-14 md:grid-cols-2 md:gap-10 lg:mt-20 lg:gap-x-8">
+      {
+        c.team.founders.map((f, i) => (
+          <li class="grid gap-6 sm:grid-cols-[minmax(0,180px)_1fr] sm:gap-8 lg:grid-cols-[220px_1fr]" data-reveal style={`--reveal-i:${i}`}>
+            {f.photo ? (
+              <img
+                src={f.photo}
+                alt={f.name}
+                width="440"
+                height="550"
+                loading="lazy"
+                decoding="async"
+                class="aspect-[4/5] w-full max-w-[160px] sm:max-w-[220px] border border-line object-cover"
+              />
+            ) : (
+              <div
+                class="flex aspect-[4/5] w-full max-w-[160px] sm:max-w-[220px] items-center justify-center border border-line bg-paper"
+                data-placeholder="founder-photo"
+              >
+                <span class="eyebrow text-muted">{c.ui.photoPlaceholder}</span>
+              </div>
+            )}
+            <div class="border-t border-ink pt-5">
+              <h3 class="text-h3 font-medium">{f.name}</h3>
+              <p class="eyebrow mt-2 text-muted">{f.role}</p>
+              <p class="mt-4 max-w-[46ch]">{f.bio}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-16 grid border-t border-line pt-6 lg:mt-20 lg:grid-cols-12 lg:gap-x-8" data-reveal>
+      <p class="max-w-[56ch] text-ink lg:col-span-7 lg:col-start-6">{c.team.note}</p>
+    </div>
+  </div>
+</section>

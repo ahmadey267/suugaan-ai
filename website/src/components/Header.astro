@@ -1,0 +1,106 @@
+---
+import type { SiteContent } from '../content/site';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-50 h-(--header-h) border-b border-transparent bg-paper/92 backdrop-blur-md transition-[border-color] duration-150 supports-[not(backdrop-filter:blur(1px))]:bg-paper"
+>
+  <div class="container-page flex h-full items-center justify-between gap-4">
+    <a
+      href="#top"
+      class="text-[1.125rem] font-medium tracking-[-0.01em] text-ink no-underline"
+      data-placeholder="logo"
+    >
+      {c.meta.siteName}
+    </a>
+
+    <nav aria-label={c.ui.primaryNavLabel} class="hidden lg:block">
+      <ul class="flex items-center gap-8">
+        {
+          c.nav.items.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="text-small text-ink-2 underline decoration-transparent decoration-1 underline-offset-[0.4em] transition-colors duration-150 hover:text-ink hover:decoration-gold"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button
+        type="button"
+        id="menu-toggle"
+        class="btn btn-sm px-3 text-ink hover:bg-paper-2 lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-label-open={c.ui.menuOpen}
+        data-label-close={c.ui.menuClose}
+      >
+        {c.ui.menuOpen}
+      </button>
+      <a href={c.nav.cta.href} class="btn btn-primary btn-sm">{c.nav.cta.label}</a>
+    </div>
+  </div>
+
+  <nav
+    id="mobile-menu"
+    aria-label={c.ui.primaryNavLabel}
+    class="absolute inset-x-0 top-full hidden border-b border-line bg-paper lg:hidden"
+  >
+    <ul class="container-page flex flex-col py-4">
+      {
+        c.nav.items.map((item) => (
+          <li class="border-t border-line first:border-t-0">
+            <a href={item.href} class="block py-4 text-lead text-ink">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const header = document.getElementById('site-header');
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  if (header) {
+    const onScroll = () => header.classList.toggle('border-line', window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
+      menu.classList.toggle('hidden', !open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+</script>

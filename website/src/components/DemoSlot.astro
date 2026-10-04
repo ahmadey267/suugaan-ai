@@ -1,0 +1,20 @@
+---
+/**
+ * Hook for a real Somali model demo after Phase 1.
+ *
+ * Rendered only when `demo.enabled` is true in src/content/site.ts.
+ * Do not put a scripted or simulated demo here. Wire it to a real endpoint
+ * (for example the NLLB translation API in ../api) and publish its scores
+ * alongside it.
+ */
+import type { SiteContent } from '../content/site';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+---
+
+<div id="demo" class="mt-14 border border-line p-6 lg:mt-20" data-locale={c.locale}>
+  <slot />
+</div>

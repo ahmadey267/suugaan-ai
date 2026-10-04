@@ -1,0 +1,49 @@
+---
+import type { SiteContent } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+import Arrow from './Arrow.astro';
+
+interface Props {
+  c: SiteContent;
+  index: number;
+}
+const { c, index } = Astro.props;
+---
+
+<section id="partner" aria-labelledby="partner-heading" class="on-dark section-pad bg-ink text-on-dark-muted">
+  <div class="container-page">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-x-8">
+      <div class="lg:col-span-5">
+        <SectionHeading index={index} eyebrow={c.partner.eyebrow} heading={c.partner.heading} headingId="partner-heading" dark />
+      </div>
+      <p class="max-w-[38ch] text-lead text-on-dark lg:col-span-6 lg:col-start-7 lg:mt-[54px]" data-reveal>
+        {c.partner.body}
+      </p>
+    </div>
+
+    <ul class="mt-14 grid border-b border-line-dark md:grid-cols-2 lg:mt-20">
+      {
+        c.partner.audiences.map((a, i) => (
+          <li
+            class:list={[
+              'border-t border-line-dark pt-6 pb-10 md:pb-12',
+              i % 2 === 0 ? 'md:pr-10 lg:pr-16' : 'md:border-l md:pl-10 lg:pl-16',
+            ]}
+            data-reveal
+            style={`--reveal-i:${i}`}
+          >
+            <h3 class="text-h3 font-medium text-on-dark!">{a.title}</h3>
+            <p class="mt-3 max-w-[46ch]">{a.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-12 lg:mt-16" data-reveal>
+      <a href={c.partner.cta.href} class="btn btn-gold">
+        {c.partner.cta.label}
+        <Arrow direction="down" />
+      </a>
+    </div>
+  </div>
+</section>
