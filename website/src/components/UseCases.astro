@@ -1,0 +1,28 @@
+---
+import type { SiteContent } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+---
+
+<section id="use-cases" aria-labelledby="use-cases-heading" class="section-pad border-t border-line">
+  <div class="container-page">
+    <SectionHeading eyebrow={c.useCases.eyebrow} heading={c.useCases.heading} headingId="use-cases-heading" />
+
+    <ul class="mt-16 border-b border-line lg:mt-24">
+      {
+        c.useCases.items.map((item, i) => (
+          <li class="group grid gap-3 border-t border-line py-8 md:grid-cols-12 md:items-baseline md:gap-x-8 lg:py-10" data-reveal style={`--reveal-i:${i}`}>
+            <h3 class="display text-[clamp(1.875rem,1.3rem+2.3vw,3.25rem)] leading-[1.04] tracking-[-0.045em] transition-colors duration-500 group-hover:text-gold-2 md:col-span-7">
+              {item.title}
+            </h3>
+            <p class="max-w-[42ch] text-fg-2 md:col-span-4 md:col-start-9">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

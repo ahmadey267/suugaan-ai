@@ -1,0 +1,39 @@
+---
+import type { SiteContent } from '../content/site';
+import Logo from './Logo.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors duration-300 hover:text-gold-2';
+---
+
+<footer class="border-t border-line text-small text-muted">
+  <div class="container-page">
+    <div class="flex flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between lg:py-20">
+      <div class="max-w-[42ch]">
+        <p class="flex items-center gap-2.5 text-fg" data-placeholder="logo">
+          <Logo />
+          <span class="font-mono text-[0.9375rem] font-medium tracking-[-0.02em]">{c.footer.name}</span>
+        </p>
+        <p class="mt-5">{c.footer.line}</p>
+      </div>
+      <ul class="flex gap-8">
+        <li>
+          <a href={c.links.linkedin} class={linkClass} data-placeholder={c.links.linkedinIsPlaceholder ? 'linkedin' : undefined} rel={c.links.linkedinIsPlaceholder ? undefined : 'noopener'}>
+            {c.footer.linkedin}
+          </a>
+        </li>
+        <li>
+          <a href={c.links.conceptNote} class={linkClass} data-placeholder={c.links.conceptNoteIsPlaceholder ? 'concept-note' : undefined}>
+            {c.footer.conceptNote}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="border-t border-line py-6">
+      <p class="font-mono text-[0.75rem]">{c.footer.copyright}</p>
+    </div>
+  </div>
+</footer>

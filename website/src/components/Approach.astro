@@ -1,0 +1,38 @@
+---
+import type { SiteContent } from '../content/site';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+---
+
+<section id="approach" aria-labelledby="approach-heading" class="section-pad border-t border-line">
+  <div class="container-page grid gap-14 lg:grid-cols-12 lg:gap-x-8">
+    <div class="lg:col-span-4">
+      <div class="lg:sticky lg:top-[calc(var(--header-h)+4rem)]" data-reveal>
+        <p class="eyebrow flex items-center gap-2.5 text-gold-2">
+          <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+          {c.approach.eyebrow}
+        </p>
+        <h2 id="approach-heading" class="display mt-6 text-h2 text-fg">{c.approach.heading}</h2>
+      </div>
+    </div>
+
+    <ol class="lg:col-span-8">
+      {
+        c.approach.principles.map((p, i) => (
+          <li class="grid gap-4 border-t border-line py-10 first:border-t-0 first:pt-0 sm:grid-cols-[4rem_1fr] lg:py-14" data-reveal style={`--reveal-i:${i}`}>
+            <span class="font-mono text-[0.8125rem] text-gold-2 tabular-nums sm:pt-4" aria-hidden="true">
+              0{i + 1}
+            </span>
+            <div>
+              <h3 class="display text-[clamp(2rem,1.3rem+2.8vw,3.5rem)] leading-[1.02] tracking-[-0.045em]">{p.title}</h3>
+              <p class="mt-5 max-w-[50ch] text-lead text-fg-2">{p.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

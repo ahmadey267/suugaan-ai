@@ -1,0 +1,47 @@
+---
+import type { SiteContent } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('');
+---
+
+<section id="team" aria-labelledby="team-heading" class="section-pad border-t border-line">
+  <div class="container-page">
+    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" intro={c.team.note} />
+
+    <ul class="mt-16 grid gap-4 md:grid-cols-2 lg:mt-24">
+      {
+        c.team.founders.map((f, i) => (
+          <li class="card card-hover grid gap-6 p-5 sm:grid-cols-[11rem_1fr] sm:p-6 lg:grid-cols-[13rem_1fr] lg:gap-8" data-reveal style={`--reveal-i:${i}`}>
+            {f.photo ? (
+              <img src={f.photo} alt={f.name} width="416" height="520" loading="lazy" decoding="async" class="aspect-[4/5] w-full max-w-[13rem] rounded-[12px] object-cover" />
+            ) : (
+              <div
+                class="relative flex aspect-[4/5] w-full max-w-[13rem] flex-col justify-between overflow-hidden rounded-[12px] bg-[radial-gradient(120%_90%_at_20%_0%,rgb(201_162_39/0.28),transparent_60%),linear-gradient(180deg,#16181c,#0c0d10)] p-4 shadow-[inset_0_0_0_1px_rgb(243_241_234/0.08)]"
+                data-placeholder="founder-photo"
+              >
+                <span aria-hidden="true" class="display text-[3.5rem] leading-none tracking-[-0.06em] text-gold-2">{initials(f.name)}</span>
+                <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
+              </div>
+            )}
+            <div class="flex flex-col">
+              <p class="eyebrow text-gold-2">{f.role}</p>
+              <h3 class="display mt-3 text-[1.75rem] leading-[1.1] tracking-[-0.035em]">{f.name}</h3>
+              <p class="mt-4 text-small text-fg-2">{f.bio}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

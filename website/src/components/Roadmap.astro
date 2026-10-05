@@ -1,0 +1,83 @@
+---
+import type { SiteContent } from '../content/site';
+import { currentPhase } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+import StatusPill from './StatusPill.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const current = currentPhase(c);
+const phases = c.roadmap.phases;
+const phaseByNumber = new Map(phases.map((p) => [p.number, p]));
+const rows = c.hero.labStatus.map((row) => ({
+  label: row.label,
+  phase: row.phase,
+  status: phaseByNumber.get(row.phase)?.status ?? 'planned',
+}));
+---
+
+<section id="roadmap" aria-labelledby="roadmap-heading" class="section-pad border-t border-line">
+  <div class="container-page">
+    <SectionHeading eyebrow={c.roadmap.eyebrow} heading={c.roadmap.heading} headingId="roadmap-heading" intro={c.roadmap.note} />
+
+    <div class="card mt-16 overflow-hidden lg:mt-24" data-reveal>
+      <ol class="grid sm:grid-cols-2 lg:grid-cols-4">
+        {
+          phases.map((p, i) => {
+            const isCurrent = p.number === current.number;
+            return (
+              <li
+                class:list={[
+                  'relative flex flex-col p-6 lg:min-h-[19rem] lg:p-8',
+                  i > 0 && 'border-t border-line',
+                  i === 1 && 'sm:border-t-0 sm:border-l',
+                  i === 2 && 'lg:border-t-0 lg:border-l',
+                  i === 3 && 'sm:border-l lg:border-t-0',
+                  isCurrent && 'bg-[radial-gradient(120%_80%_at_0%_0%,rgb(201_162_39/0.14),transparent_60%)]',
+                ]}
+                aria-current={isCurrent ? 'step' : undefined}
+              >
+                <span aria-hidden="true" class:list={['absolute inset-x-0 top-0 h-1', isCurrent ? 'hatch' : p.status === 'done' ? 'bg-gold' : 'bg-line']} />
+                <div class="flex items-center justify-between gap-3">
+                  <span class:list={['font-mono text-[0.75rem] tabular-nums', isCurrent ? 'text-gold-2' : 'text-muted']}>
+                    {c.ui.phaseWord} 0{p.number}
+                  </span>
+                  <StatusPill status={p.status} label={c.ui.statusLabels[p.status]} />
+                </div>
+                <span aria-hidden="true" class:list={['display mt-10 text-[4.5rem] leading-none tracking-[-0.06em]', isCurrent ? 'text-gold-2' : 'text-[rgb(243_241_234/0.14)]']}>
+                  {p.number}
+                </span>
+                <h3 class="display mt-auto pt-10 text-[1.5rem] leading-tight tracking-[-0.03em]">
+                  <span class="sr-only">{c.ui.phaseWord} {p.number}. </span>
+                  {p.name}
+                </h3>
+                <p class="mt-2 text-small text-fg-2">{p.focus}</p>
+              </li>
+            );
+          })
+        }
+      </ol>
+
+      <!-- Where each building block sits on the roadmap -->
+      <div class="border-t border-line px-6 py-5 lg:px-8">
+        <p id="lab-status-heading" class="eyebrow text-muted">{c.ui.labStatus}</p>
+        <ul class="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4" aria-labelledby="lab-status-heading">
+          {
+            rows.map((r) => (
+              <li class="flex items-center justify-between gap-3 font-mono text-code">
+                <span class="text-fg">{r.label}</span>
+                <span class:list={['flex items-center gap-2', r.status === 'in-progress' ? 'text-gold-2' : 'text-muted']}>
+                  {c.ui.phaseWord.toLowerCase()} {r.phase}
+                  <span aria-hidden="true">·</span>
+                  {c.ui.statusLabels[r.status].toLowerCase()}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

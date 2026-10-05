@@ -1,0 +1,37 @@
+---
+import type { SiteContent } from '../content/site';
+import SectionHeading from './SectionHeading.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const slug = (s: string) => 'build-' + s.toLowerCase().replace(/[^a-z]+/g, '');
+---
+
+<section id="problem" aria-labelledby="problem-heading" class="section-pad pt-16! md:pt-20! lg:pt-28!">
+  <div class="container-page">
+    <SectionHeading eyebrow={c.problem.eyebrow} heading={c.problem.heading} headingId="problem-heading" intro={c.problem.body} />
+
+    <ul class="mt-16 grid gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-4">
+      {
+        c.problem.gaps.map((gap, i) => (
+          <li class="card card-hover flex flex-col p-6 lg:p-7" data-reveal style={`--reveal-i:${i}`}>
+            <span class="font-mono text-[0.75rem] text-muted tabular-nums" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="display mt-14 text-h3">{gap.title}</h3>
+            <p class="mt-3 text-small text-fg-2">{gap.body}</p>
+            <p class="mt-auto flex flex-wrap gap-1.5 pt-8">
+              {gap.addressedBy.map((b) => (
+                <a href={`#${slug(b)}`} class="rounded-full border border-line-strong px-2.5 py-1 font-mono text-[0.6875rem] text-fg-2 transition-colors duration-300 hover:border-gold hover:text-gold-2">
+                  {b}
+                </a>
+              ))}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

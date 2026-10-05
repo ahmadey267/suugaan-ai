@@ -1,0 +1,193 @@
+---
+import type { SiteContent } from '../content/site';
+import { HONEYPOT_FIELD, LIMITS } from '../lib/contact';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const f = c.contact.fields;
+const messages = {
+  required: c.contact.validation.required,
+  email: c.contact.validation.email,
+  too_long: c.contact.validation.tooLong,
+  invalid: c.contact.validation.required,
+  confirmation: c.contact.confirmation,
+  error: c.contact.error,
+  sending: c.ui.sending,
+};
+---
+
+<section id="contact" aria-labelledby="contact-heading" class="section-pad">
+  <div class="container-page">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
+      <div class="lg:col-span-4" data-reveal>
+        <p class="eyebrow flex items-center gap-2.5 text-gold-2">
+          <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+          {c.contact.eyebrow}
+        </p>
+        <h2 id="contact-heading" class="display mt-6 text-h2 text-fg">{c.contact.heading}</h2>
+      </div>
+
+      <form
+        id="contact-form"
+        action="/api/contact"
+        method="post"
+        novalidate
+        class="card grid gap-x-5 gap-y-6 p-6 sm:p-8 md:grid-cols-2 lg:col-span-8 lg:p-10"
+        data-messages={JSON.stringify(messages)}
+        data-reveal
+      >
+        <div>
+          <label for="cf-name" class="block text-small font-medium text-fg">
+            {f.name} <span class="font-normal text-muted">{c.ui.required}</span>
+          </label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength={LIMITS.name} class="field-input mt-2" aria-describedby="cf-name-error" />
+          <p id="cf-name-error" class="mt-2 hidden text-small text-error" data-error-for="name"></p>
+        </div>
+
+        <div>
+          <label for="cf-organisation" class="block text-small font-medium text-fg">{f.organisation}</label>
+          <input id="cf-organisation" name="organisation" type="text" autocomplete="organization" maxlength={LIMITS.organisation} class="field-input mt-2" aria-describedby="cf-organisation-error" />
+          <p id="cf-organisation-error" class="mt-2 hidden text-small text-error" data-error-for="organisation"></p>
+        </div>
+
+        <div>
+          <label for="cf-email" class="block text-small font-medium text-fg">
+            {f.email} <span class="font-normal text-muted">{c.ui.required}</span>
+          </label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength={LIMITS.email} class="field-input mt-2" aria-describedby="cf-email-error" />
+          <p id="cf-email-error" class="mt-2 hidden text-small text-error" data-error-for="email"></p>
+        </div>
+
+        <div>
+          <label for="cf-role" class="block text-small font-medium text-fg">
+            {f.role} <span class="font-normal text-muted">{c.ui.required}</span>
+          </label>
+          <select id="cf-role" name="role" required class="field-input mt-2" aria-describedby="cf-role-error">
+            <option value="" selected disabled>{c.ui.selectPlaceholder}</option>
+            {f.roleOptions.map((o) => <option value={o}>{o}</option>)}
+          </select>
+          <p id="cf-role-error" class="mt-2 hidden text-small text-error" data-error-for="role"></p>
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="cf-message" class="block text-small font-medium text-fg">
+            {f.message} <span class="font-normal text-muted">{c.ui.required}</span>
+          </label>
+          <textarea id="cf-message" name="message" required maxlength={LIMITS.message} rows="6" class="field-input mt-2" aria-describedby="cf-message-error"></textarea>
+          <p id="cf-message-error" class="mt-2 hidden text-small text-error" data-error-for="message"></p>
+        </div>
+
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="cf-hp">{c.ui.honeypotLabel}</label>
+          <input id="cf-hp" name={HONEYPOT_FIELD} type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="flex flex-col items-start gap-4 md:col-span-2">
+          <button type="submit" class="btn btn-gold">{c.contact.submit}</button>
+          <p id="contact-status" role="status" aria-live="polite" class="min-h-[1.55em] text-small"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  type Messages = Record<string, string>;
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const status = document.getElementById('contact-status');
+
+  if (form && status) {
+    const messages: Messages = JSON.parse(form.dataset.messages ?? '{}');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const submitLabel = submit.textContent ?? '';
+    const fields = ['name', 'organisation', 'email', 'role', 'message'] as const;
+
+    const setStatus = (kind: 'ok' | 'error' | 'info' | 'clear', text = '') => {
+      status.textContent = text;
+      status.classList.toggle('text-success', kind === 'ok');
+      status.classList.toggle('text-error', kind === 'error');
+      status.classList.toggle('text-muted', kind === 'info');
+    };
+
+    const setFieldError = (name: string, code?: string) => {
+      const input = form.elements.namedItem(name) as HTMLInputElement | null;
+      const msg = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (!input || !msg) return;
+      if (code) {
+        input.setAttribute('aria-invalid', 'true');
+        msg.textContent = messages[code] ?? messages.required;
+        msg.classList.remove('hidden');
+      } else {
+        input.removeAttribute('aria-invalid');
+        msg.textContent = '';
+        msg.classList.add('hidden');
+      }
+    };
+
+    const clientCheck = () => {
+      const errors: Record<string, string> = {};
+      for (const name of fields) {
+        const el = form.elements.namedItem(name) as HTMLInputElement;
+        const v = el.value.trim();
+        if (el.required && !v) errors[name] = 'required';
+        else if (name === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) errors[name] = 'email';
+      }
+      return errors;
+    };
+
+    // Result of a no-JavaScript form post comes back as ?contact=sent|error.
+    const params = new URLSearchParams(location.search);
+    const result = params.get('contact');
+    if (result === 'sent') setStatus('ok', messages.confirmation);
+    if (result === 'error') setStatus('error', messages.error);
+    if (result) history.replaceState(null, '', location.pathname + location.hash);
+
+    form.addEventListener('input', (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t.getAttribute('aria-invalid') === 'true') setFieldError(t.name);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setStatus('clear');
+      fields.forEach((n) => setFieldError(n));
+
+      const errors = clientCheck();
+      const invalid = Object.keys(errors);
+      if (invalid.length) {
+        invalid.forEach((n) => setFieldError(n, errors[n]));
+        (form.elements.namedItem(invalid[0]) as HTMLElement).focus();
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = messages.sending;
+      try {
+        const body = Object.fromEntries(new FormData(form));
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          form.reset();
+          setStatus('ok', messages.confirmation);
+        } else if (res.status === 422 && data.errors) {
+          const names = Object.keys(data.errors);
+          names.forEach((n) => setFieldError(n, data.errors[n]));
+          if (names[0]) (form.elements.namedItem(names[0]) as HTMLElement)?.focus();
+        } else {
+          setStatus('error', messages.error);
+        }
+      } catch {
+        setStatus('error', messages.error);
+      } finally {
+        submit.disabled = false;
+        submit.textContent = submitLabel;
+      }
+    });
+  }
+</script>

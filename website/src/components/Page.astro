@@ -1,0 +1,36 @@
+---
+import type { SiteContent } from '../content/site';
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Problem from './Problem.astro';
+import Build from './Build.astro';
+import Approach from './Approach.astro';
+import Roadmap from './Roadmap.astro';
+import UseCases from './UseCases.astro';
+import Team from './Team.astro';
+import Partner from './Partner.astro';
+import Contact from './Contact.astro';
+import Footer from './Footer.astro';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+---
+
+<Base c={c}>
+  <Header c={c} />
+  <main id="main" tabindex="-1" class="outline-none">
+    <Hero c={c} />
+    <Problem c={c} />
+    <Build c={c} />
+    <Approach c={c} />
+    <Roadmap c={c} />
+    <UseCases c={c} />
+    <Team c={c} />
+    <Partner c={c} />
+    <Contact c={c} />
+  </main>
+  <Footer c={c} />
+</Base>

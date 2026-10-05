@@ -1,0 +1,25 @@
+---
+interface Props {
+  eyebrow: string;
+  heading: string;
+  headingId: string;
+  intro?: string;
+}
+const { eyebrow, heading, headingId, intro } = Astro.props;
+// First sentence bright, the rest dimmed.
+const [first, ...rest] = heading.split(/(?<=\.)\s+/);
+---
+
+<div class="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-x-8" data-reveal>
+  <div class="lg:col-span-8">
+    <p class="eyebrow flex items-center gap-2.5 text-gold-2">
+      <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+      {eyebrow}
+    </p>
+    <h2 id={headingId} class="display mt-6 max-w-[17ch] text-h2 text-fg">
+      {first}
+      {rest.length > 0 && <span class="text-dim"> {rest.join(' ')}</span>}
+    </h2>
+  </div>
+  {intro && <p class="max-w-[44ch] text-lead text-fg-2 lg:col-span-4 lg:pb-2">{intro}</p>}
+</div>

@@ -85,6 +85,11 @@ Generated data files are gitignored; run `scripts/prepare_data.py` to rebuild th
 
 Training needs a CUDA GPU with ≥16 GB VRAM. Data prep and eval run on CPU or Apple Silicon.
 
+## `website/`
+
+The public marketing site for Sugan AI (Astro, Tailwind CSS, Cloudflare Pages). See
+[`website/docs/handover.md`](website/docs/handover.md) to run, deploy and edit it.
+
 ## `landing/`
 
 A marketing page mockup, built with Lovable and never deployed. **Its copy is aspirational,

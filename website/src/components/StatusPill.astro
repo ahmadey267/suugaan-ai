@@ -1,0 +1,20 @@
+---
+import type { PhaseStatus } from '../content/site';
+
+interface Props {
+  status: PhaseStatus;
+  label: string;
+}
+const { status, label } = Astro.props;
+const styles: Record<PhaseStatus, string> = {
+  'in-progress': 'border-gold/50 bg-gold-soft text-gold-2',
+  next: 'border-line-strong text-fg-2',
+  planned: 'border-line-strong text-muted',
+  done: 'border-success/60 text-success',
+};
+---
+
+<span class:list={['inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full border px-2.5 font-mono text-[0.6875rem] whitespace-nowrap', styles[status]]}>
+  {status === 'in-progress' && <span class="size-1.5 animate-pulse rounded-full bg-gold-2" aria-hidden="true" />}
+  {label}
+</span>
