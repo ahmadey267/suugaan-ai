@@ -1,43 +1,56 @@
 ---
 import type { SiteContent } from '../content/site';
-import SectionHeading from './SectionHeading.astro';
 import Arrow from './Arrow.astro';
 
 interface Props {
   c: SiteContent;
 }
 const { c } = Astro.props;
+const [first, ...rest] = c.partner.heading.split(/(?<=\.)\s+/);
 ---
 
-<section id="partner" aria-labelledby="partner-heading" class="relative overflow-hidden">
-  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[460px] bg-[radial-gradient(45%_75%_at_50%_100%,rgb(201_162_39/0.14),transparent_70%)]" aria-hidden="true"></div>
+<section id="partner" aria-labelledby="partner-heading" class="relative section-pad overflow-hidden border-t border-line">
+  <div class="halo top-1/2 left-1/2 h-[620px] w-[1100px] -translate-x-1/2 -translate-y-1/2 opacity-70" aria-hidden="true"></div>
   <div class="container-page relative">
-    <div class="frame frame-top frame-pad section-pad pb-14! lg:pb-20!">
-      <SectionHeading index="07" eyebrow={c.partner.eyebrow} heading={c.partner.heading} headingId="partner-heading" intro={c.partner.body} />
-    </div>
+    <div class="card card-gold overflow-hidden p-6 sm:p-10 lg:p-16" data-reveal>
+      <div class="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-x-8">
+        <div class="lg:col-span-7">
+          <p class="eyebrow flex items-center gap-2.5 text-gold-2">
+            <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+            {c.partner.eyebrow}
+          </p>
+          <h2 id="partner-heading" class="display mt-6 text-h2 text-fg">
+            {first}{rest.length > 0 && <span class="text-dim"> {rest.join(' ')}</span>}
+          </h2>
+        </div>
+        <p class="max-w-[40ch] text-lead text-fg-2 lg:col-span-5 lg:pb-2">{c.partner.body}</p>
+      </div>
 
-    <!-- Each row jumps to the form with the matching "I am a" option selected. -->
-    <ul class="frame border-t border-line">
-      {
-        c.partner.audiences.map((a, i) => (
-          <li class="border-b border-line" data-reveal style={`--reveal-i:${i}`}>
-            <a href={c.partner.cta.href} data-role={a.role} class="audience grid gap-2 py-7 md:grid-cols-12 md:items-baseline md:gap-x-8 md:px-6 lg:px-8">
-              <h3 class="font-mono text-h3 font-medium md:col-span-5">{a.title}</h3>
-              <p class="text-fg-2 md:col-span-6">{a.body}</p>
-              <span class="audience-go hidden justify-self-end text-muted md:col-span-1 md:flex" aria-hidden="true">
-                <Arrow />
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+      <!-- Choosing an audience preselects the matching "I am a" option in the form below. -->
+      <ul class="mt-12 grid gap-3 sm:grid-cols-2 lg:mt-16">
+        {
+          c.partner.audiences.map((a) => (
+            <li>
+              <a href={c.partner.cta.href} data-role={a.role} class="audience card group flex h-full flex-col p-5 sm:p-6">
+                <span class="flex items-start justify-between gap-4">
+                  <h3 class="display text-[1.375rem] leading-tight tracking-[-0.03em]">{a.title}</h3>
+                  <span class="mt-1 text-muted transition-colors duration-300 group-hover:text-gold-2" aria-hidden="true">
+                    <Arrow />
+                  </span>
+                </span>
+                <p class="mt-3 text-small text-fg-2">{a.body}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
 
-    <div class="frame frame-pad py-12 lg:py-16" data-reveal>
-      <a href={c.partner.cta.href} class="btn btn-gold h-12 px-6">
-        {c.partner.cta.label}
-        <Arrow direction="down" />
-      </a>
+      <div class="mt-10 lg:mt-12">
+        <a href={c.partner.cta.href} class="btn btn-gold h-13 px-7 text-[0.9375rem]">
+          {c.partner.cta.label}
+          <Arrow direction="down" />
+        </a>
+      </div>
     </div>
   </div>
 </section>

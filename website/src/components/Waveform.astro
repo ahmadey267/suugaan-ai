@@ -1,0 +1,60 @@
+---
+/**
+ * The Somali Latin alphabet set as a waveform: one bar per letter, with the letter and its
+ * sound (IPA) underneath. Gold marks sounds English does not have. Bar heights are a fixed
+ * decorative pattern, not measured audio.
+ */
+interface Props {
+  label: string;
+  caption: string;
+  summary: string;
+}
+const { label, caption, summary } = Astro.props;
+const letters: [string, string][] = [
+  ['b', 'b'], ['t', 't'], ['j', 'dʒ'], ['x', 'ħ'], ['kh', 'χ'], ['d', 'd'], ['r', 'r'],
+  ['s', 's'], ['sh', 'ʃ'], ['dh', 'ɖ'], ['c', 'ʕ'], ['g', 'ɡ'], ['f', 'f'], ['q', 'q'],
+  ['k', 'k'], ['l', 'l'], ['m', 'm'], ['n', 'n'], ['w', 'w'], ['h', 'h'], ['y', 'j'],
+  ['a', 'a'], ['e', 'e'], ['i', 'i'], ['o', 'o'], ['u', 'u'],
+];
+const distinct = new Set(['x', 'kh', 'dh', 'c', 'q']);
+const amp = (i: number) => 0.14 + 0.86 * Math.abs(Math.sin(i * 0.55) * Math.cos(i * 0.21 + 0.6));
+const cols = letters.map(([l, ipa], i) => ({
+  l,
+  ipa,
+  gold: distinct.has(l),
+  amp: amp(i).toFixed(3),
+  dur: (1.7 + ((i * 37) % 13) / 10).toFixed(2),
+  delay: (-((i * 53) % 17) / 10).toFixed(2),
+}));
+---
+
+<figure class="waveform" aria-label={label}>
+  <ol class="relative grid grid-cols-13 gap-y-10 sm:grid-cols-26 sm:gap-y-0" aria-hidden="true">
+    <span class="absolute inset-x-0 hidden h-px bg-line sm:top-[130px] sm:block lg:top-[150px]"></span>
+    {
+      cols.map((col, i) => (
+        <li class="wave-col group relative flex flex-col items-center" style={`--i:${i}`}>
+          <span class="flex h-[120px] items-center sm:h-[260px] lg:h-[300px]">
+            <span
+              class:list={[
+                'wave-bar block h-full w-[3px] rounded-full sm:w-[4px] lg:w-[5px]',
+                col.gold
+                  ? 'bg-[linear-gradient(180deg,#f0d27a,#c9a227)] shadow-[0_0_22px_rgb(201_162_39/0.55)]'
+                  : 'bg-[rgb(243_241_234/0.24)]',
+              ]}
+              style={`--amp:${col.amp};--dur:${col.dur}s;--delay:${col.delay}s`}
+            />
+          </span>
+          <span class:list={['mt-4 text-[1.125rem] leading-none font-light sm:mt-6 sm:text-[1.5rem] lg:text-[2.125rem]', col.gold ? 'text-gold-2' : 'text-fg']}>
+            {col.l}
+          </span>
+          <span class="mt-2 font-mono text-[0.5625rem] text-muted sm:text-[0.625rem] lg:text-[0.6875rem]">/{col.ipa}/</span>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption class="mt-10 flex flex-col gap-2 border-t border-line pt-5 font-mono text-[0.75rem] text-muted sm:flex-row sm:justify-between">
+    <span>{caption}</span>
+    <span>{summary}</span>
+  </figcaption>
+</figure>

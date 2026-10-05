@@ -67,6 +67,7 @@ export interface SiteContent {
     labStatus: { label: string; phase: number }[];
     alphabetLabel: string;
     alphabetCaption: string;
+    alphabetSummary: string;
   };
   problem: {
     eyebrow: string;
@@ -208,7 +209,8 @@ const en: SiteContent = {
       { label: 'Voice', phase: 3 },
     ],
     alphabetLabel: 'The Somali Latin alphabet: 21 consonants and 5 vowels, each shown with its sound.',
-    alphabetCaption: 'The Somali Latin alphabet. Gold letters mark sounds English does not have.',
+    alphabetCaption: 'The Somali Latin alphabet, set as a waveform. Gold letters are sounds English does not have.',
+    alphabetSummary: '26 letters · 21 consonants · 5 vowels',
   },
   problem: {
     eyebrow: 'The problem',

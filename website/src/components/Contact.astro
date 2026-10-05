@@ -18,12 +18,15 @@ const messages = {
 };
 ---
 
-<section id="contact" aria-labelledby="contact-heading">
+<section id="contact" aria-labelledby="contact-heading" class="section-pad">
   <div class="container-page">
-    <div class="frame frame-top frame-pad section-pad grid gap-12 lg:grid-cols-12 lg:gap-x-8">
-      <div class="lg:col-span-4">
-        <p class="eyebrow flex gap-3 text-muted"><span class="text-gold">08</span><span>{c.contact.eyebrow}</span></p>
-        <h2 id="contact-heading" class="mono-heading mt-6 text-h2 text-fg">{c.contact.heading}</h2>
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
+      <div class="lg:col-span-4" data-reveal>
+        <p class="eyebrow flex items-center gap-2.5 text-gold-2">
+          <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+          {c.contact.eyebrow}
+        </p>
+        <h2 id="contact-heading" class="display mt-6 text-h2 text-fg">{c.contact.heading}</h2>
       </div>
 
       <form
@@ -31,12 +34,12 @@ const messages = {
         action="/api/contact"
         method="post"
         novalidate
-        class="grid gap-x-5 gap-y-6 md:grid-cols-2 lg:col-span-8 lg:col-start-5"
+        class="card grid gap-x-5 gap-y-6 p-6 sm:p-8 md:grid-cols-2 lg:col-span-8 lg:p-10"
         data-messages={JSON.stringify(messages)}
         data-reveal
       >
         <div>
-          <label for="cf-name" class="block font-mono text-[0.8125rem] font-medium text-fg">
+          <label for="cf-name" class="block text-small font-medium text-fg">
             {f.name} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength={LIMITS.name} class="field-input mt-2" aria-describedby="cf-name-error" />
@@ -44,13 +47,13 @@ const messages = {
         </div>
 
         <div>
-          <label for="cf-organisation" class="block font-mono text-[0.8125rem] font-medium text-fg">{f.organisation}</label>
+          <label for="cf-organisation" class="block text-small font-medium text-fg">{f.organisation}</label>
           <input id="cf-organisation" name="organisation" type="text" autocomplete="organization" maxlength={LIMITS.organisation} class="field-input mt-2" aria-describedby="cf-organisation-error" />
           <p id="cf-organisation-error" class="mt-2 hidden text-small text-error" data-error-for="organisation"></p>
         </div>
 
         <div>
-          <label for="cf-email" class="block font-mono text-[0.8125rem] font-medium text-fg">
+          <label for="cf-email" class="block text-small font-medium text-fg">
             {f.email} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength={LIMITS.email} class="field-input mt-2" aria-describedby="cf-email-error" />
@@ -58,7 +61,7 @@ const messages = {
         </div>
 
         <div>
-          <label for="cf-role" class="block font-mono text-[0.8125rem] font-medium text-fg">
+          <label for="cf-role" class="block text-small font-medium text-fg">
             {f.role} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <select id="cf-role" name="role" required class="field-input mt-2" aria-describedby="cf-role-error">
@@ -69,7 +72,7 @@ const messages = {
         </div>
 
         <div class="md:col-span-2">
-          <label for="cf-message" class="block font-mono text-[0.8125rem] font-medium text-fg">
+          <label for="cf-message" class="block text-small font-medium text-fg">
             {f.message} <span class="font-normal text-muted">{c.ui.required}</span>
           </label>
           <textarea id="cf-message" name="message" required maxlength={LIMITS.message} rows="6" class="field-input mt-2" aria-describedby="cf-message-error"></textarea>

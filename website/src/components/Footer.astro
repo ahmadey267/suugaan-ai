@@ -6,18 +6,18 @@ interface Props {
   c: SiteContent;
 }
 const { c } = Astro.props;
-const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors duration-150 hover:text-gold';
+const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors duration-300 hover:text-gold-2';
 ---
 
-<footer class="text-small text-muted">
+<footer class="border-t border-line text-small text-muted">
   <div class="container-page">
-    <div class="frame frame-top frame-pad flex flex-col gap-8 py-12 sm:flex-row sm:items-start sm:justify-between">
-      <div class="max-w-[40ch]">
+    <div class="flex flex-col gap-10 py-14 sm:flex-row sm:items-end sm:justify-between lg:py-20">
+      <div class="max-w-[42ch]">
         <p class="flex items-center gap-2.5 text-fg" data-placeholder="logo">
           <Logo />
           <span class="font-mono text-[0.9375rem] font-medium tracking-[-0.02em]">{c.footer.name}</span>
         </p>
-        <p class="mt-4">{c.footer.line}</p>
+        <p class="mt-5">{c.footer.line}</p>
       </div>
       <ul class="flex gap-8">
         <li>
@@ -32,7 +32,7 @@ const linkClass = 'font-mono text-[0.8125rem] text-fg-2 transition-colors durati
         </li>
       </ul>
     </div>
-    <div class="frame frame-pad border-t border-line py-6">
+    <div class="border-t border-line py-6">
       <p class="font-mono text-[0.75rem]">{c.footer.copyright}</p>
     </div>
   </div>

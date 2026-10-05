@@ -15,34 +15,33 @@ const initials = (name: string) =>
     .join('');
 ---
 
-<section id="team" aria-labelledby="team-heading">
+<section id="team" aria-labelledby="team-heading" class="section-pad border-t border-line">
   <div class="container-page">
-    <div class="frame frame-top frame-pad section-pad pb-14! lg:pb-20!">
-      <SectionHeading index="06" eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" />
-    </div>
-    <ul class="frame grid border-t border-line md:grid-cols-2">
+    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" intro={c.team.note} />
+
+    <ul class="mt-16 grid gap-4 md:grid-cols-2 lg:mt-24">
       {
         c.team.founders.map((f, i) => (
-          <li class:list={['flex gap-5 py-8 md:px-6 lg:gap-8 lg:px-8 lg:py-10', i > 0 && 'border-t border-line md:border-t-0 md:border-l']} data-reveal style={`--reveal-i:${i}`}>
+          <li class="card card-hover grid gap-6 p-5 sm:grid-cols-[11rem_1fr] sm:p-6 lg:grid-cols-[13rem_1fr] lg:gap-8" data-reveal style={`--reveal-i:${i}`}>
             {f.photo ? (
-              <img src={f.photo} alt={f.name} width="240" height="300" loading="lazy" decoding="async" class="aspect-[4/5] w-24 shrink-0 object-cover sm:w-32" />
+              <img src={f.photo} alt={f.name} width="416" height="520" loading="lazy" decoding="async" class="aspect-[4/5] w-full max-w-[13rem] rounded-[12px] object-cover" />
             ) : (
-              <div class="flex aspect-[4/5] w-24 shrink-0 flex-col justify-between border border-line bg-surface p-2.5 sm:w-32" data-placeholder="founder-photo">
-                <span aria-hidden="true" class="font-mono text-[2rem] leading-none tracking-[-0.06em] text-gold">{initials(f.name)}</span>
-                <span class="font-mono text-[0.5625rem] leading-tight tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
+              <div
+                class="relative flex aspect-[4/5] w-full max-w-[13rem] flex-col justify-between overflow-hidden rounded-[12px] bg-[radial-gradient(120%_90%_at_20%_0%,rgb(201_162_39/0.28),transparent_60%),linear-gradient(180deg,#16181c,#0c0d10)] p-4 shadow-[inset_0_0_0_1px_rgb(243_241_234/0.08)]"
+                data-placeholder="founder-photo"
+              >
+                <span aria-hidden="true" class="display text-[3.5rem] leading-none tracking-[-0.06em] text-gold-2">{initials(f.name)}</span>
+                <span class="font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{c.ui.photoPlaceholder}</span>
               </div>
             )}
-            <div class="min-w-0">
-              <h3 class="font-mono text-[1.25rem] leading-snug font-medium tracking-[-0.03em]">{f.name}</h3>
-              <p class="eyebrow mt-1.5 text-gold">{f.role}</p>
+            <div class="flex flex-col">
+              <p class="eyebrow text-gold-2">{f.role}</p>
+              <h3 class="display mt-3 text-[1.75rem] leading-[1.1] tracking-[-0.035em]">{f.name}</h3>
               <p class="mt-4 text-small text-fg-2">{f.bio}</p>
             </div>
           </li>
         ))
       }
     </ul>
-    <div class="frame frame-pad border-t border-line py-8" data-reveal>
-      <p class="max-w-[64ch] text-small text-fg-2">{c.team.note}</p>
-    </div>
   </div>
 </section>
