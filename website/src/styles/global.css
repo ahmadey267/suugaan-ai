@@ -118,26 +118,30 @@
 
 /* ---------- Base ---------- */
 
+/* Page ground and text defaults are deliberately outside any layer, so a host page's own
+   reset (for example a preview wrapper) cannot turn the background light. */
+:root {
+  --header-h: 68px;
+  color-scheme: dark;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--color-bg);
+}
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @layer base {
-  :root {
-    --header-h: 68px;
-    color-scheme: dark;
-  }
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    background: var(--color-bg);
-  }
-  body {
-    background: var(--color-bg);
-    color: var(--color-fg-2);
-    font-family: var(--font-sans);
-    font-size: var(--text-body);
-    line-height: var(--text-body--line-height);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
   h1, h2, h3 {
     color: var(--color-fg);
     text-wrap: balance;
