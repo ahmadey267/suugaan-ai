@@ -1,31 +1,37 @@
 #!/usr/bin/env python3
 """
-Fine-tune NLLB-200 on the clean English-Somali corpus.
+Fine-tune a translation model on the clean English-Somali corpus.
 
 This is the replacement for scripts/train.py, which fine-tuned Gemma-3-1B on
 Qur'an and Bible verses and scored BLEU 6.46. Two things change here:
 
-  1. The base model is NLLB-200, which already knows Somali, instead of a 1B
-     English-centric model that had to learn it from 28k verses.
+  1. The base model already knows Somali, instead of a 1B English-centric model
+     that had to learn it from 28k verses.
   2. The data is data/clean/, built by scripts/build_corpus.py from human
      translated civic, health, UI and talk corpora -- no scripture.
 
 Training runs in both directions (en->so and so->en) from the same pairs, which
 doubles the examples and keeps one model serving both ways, as the API expects.
 
-LoRA is the default because a full fine-tune of even the 600M model needs ~10GB
-of optimiser state, which does not fit alongside anything else on a laptop.
-Pass --full on a real GPU.
+The default base is google/madlad400-3b-mt: Apache-2.0, so the result can back a
+paid product. NLLB-200 is CC-BY-NC-4.0 and cannot, however good it is -- a
+fine-tune inherits the licence of its base.
 
-  python scripts/train_nllb.py                      # LoRA, 600M, MPS or CUDA
-  python scripts/train_nllb.py --full --epochs 3    # full fine-tune (GPU)
-  python scripts/train_nllb.py --model facebook/nllb-200-distilled-1.3B
+LoRA is the default because MADLAD-3B is 2.94B parameters: a full fine-tune with
+AdamW needs roughly 47GB of parameters, gradients and optimiser state before
+activations. LoRA fits on a 24GB card.
+
+  python scripts/train_mt.py                        # LoRA on MADLAD-3B
+  python scripts/train_mt.py --full --optim adafactor   # needs ~40GB+
+  python scripts/train_mt.py --model facebook/nllb-200-distilled-1.3B  # research only
 """
 
 import argparse
 import json
 import math
 from pathlib import Path
+
+import sys
 
 import torch
 from torch.utils.data import Dataset
@@ -38,7 +44,15 @@ from transformers import (
 )
 
 REPO = Path(__file__).resolve().parent.parent
-LANG = {"en": "eng_Latn", "so": "som_Latn"}
+sys.path.insert(0, str(REPO))
+import sugaan_mt  # noqa: E402
+
+# LoRA attention projection names differ between architectures.
+LORA_TARGETS = {
+    "madlad": ["q", "k", "v", "o"],
+    "nllb": ["q_proj", "k_proj", "v_proj", "out_proj"],
+    "marian": ["q_proj", "k_proj", "v_proj", "out_proj"],
+}
 
 
 def detect_device() -> str:
@@ -56,10 +70,11 @@ class BiDirectional(Dataset):
     is reconfigured per item rather than once for the whole set.
     """
 
-    def __init__(self, path: Path, tokenizer, max_len: int):
+    def __init__(self, path: Path, tokenizer, max_len: int, family: str):
         self.rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
         self.tok = tokenizer
         self.max_len = max_len
+        self.family = family
 
     def __len__(self) -> int:
         return len(self.rows) * 2
@@ -67,22 +82,17 @@ class BiDirectional(Dataset):
     def __getitem__(self, i: int):
         row = self.rows[i // 2]
         src, tgt = ("en", "so") if i % 2 == 0 else ("so", "en")
-        self.tok.src_lang = LANG[src]
-        self.tok.tgt_lang = LANG[tgt]
-        enc = self.tok(
-            row[src],
-            text_target=row[tgt],
-            max_length=self.max_len,
-            truncation=True,
+        enc = sugaan_mt.train_pair(
+            self.tok, row[src], row[tgt], src, tgt, self.family, self.max_len
         )
         return {k: enc[k] for k in ("input_ids", "attention_mask", "labels")}
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="facebook/nllb-200-distilled-600M")
+    ap.add_argument("--model", default="google/madlad400-3b-mt")
     ap.add_argument("--data_dir", default="data/clean")
-    ap.add_argument("--out_dir", default="outputs/nllb-ft")
+    ap.add_argument("--out_dir", default="outputs/mt-ft")
     ap.add_argument("--epochs", type=float, default=3.0)
     ap.add_argument("--batch_size", type=int, default=8)
     ap.add_argument("--grad_accum", type=int, default=4)
@@ -106,6 +116,12 @@ def main():
     tok = AutoTokenizer.from_pretrained(args.model)
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model)
 
+    family = sugaan_mt.detect_family(model, tok)
+    warning = sugaan_mt.licence_warning(family)
+    if warning:
+        print(f"\n  !! {warning}\n")
+    print(f"family={family}")
+
     if not args.full:
         from peft import LoraConfig, get_peft_model
 
@@ -120,14 +136,14 @@ def main():
                 lora_dropout=0.05,
                 bias="none",
                 task_type="SEQ_2_SEQ_LM",
-                target_modules=["q_proj", "k_proj", "v_proj", "out_proj"],
+                target_modules=LORA_TARGETS[family],
             ),
         )
         model.print_trainable_parameters()
 
     data_dir = REPO / args.data_dir
-    train_ds = BiDirectional(data_dir / "train.jsonl", tok, args.max_len)
-    dev_ds = BiDirectional(data_dir / "dev.jsonl", tok, args.max_len)
+    train_ds = BiDirectional(data_dir / "train.jsonl", tok, args.max_len, family)
+    dev_ds = BiDirectional(data_dir / "dev.jsonl", tok, args.max_len, family)
     print(f"train={len(train_ds)} examples (both directions)  dev={len(dev_ds)}")
 
     steps_per_epoch = math.ceil(len(train_ds) / (args.batch_size * args.grad_accum))
@@ -176,7 +192,7 @@ def main():
         model.merge_and_unload().save_pretrained(out)
     tok.save_pretrained(out)
     print(f"\nSaved to {out}")
-    print(f"Evaluate with:\n  python scripts/eval_nllb.py --model {out} --testset flores")
+    print(f"Evaluate with:\n  python scripts/eval_mt.py --model {out} --testset flores")
 
 
 if __name__ == "__main__":

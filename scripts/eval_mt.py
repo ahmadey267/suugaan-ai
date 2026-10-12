@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Evaluate an NLLB translation model on English <-> Somali.
+Evaluate a translation model on English <-> Somali.
 
 Unlike scripts/evaluate.py (which scores the shelved Gemma fine-tune), this
 measures the model the API actually serves, on benchmarks that reflect how the
@@ -16,13 +16,14 @@ Test sets:
            and imperative; the closest thing here to product copy.
 
 Examples:
-  python scripts/eval_nllb.py --testset flores --limit 200
-  python scripts/eval_nllb.py --testset flores --direction so-en
-  python scripts/eval_nllb.py --model facebook/nllb-200-distilled-600M
+  python scripts/eval_mt.py --testset flores --limit 200
+  python scripts/eval_mt.py --testset flores --direction so-en
+  python scripts/eval_mt.py --model google/madlad400-3b-mt
 """
 
 import argparse
 import json
+import sys
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -32,8 +33,9 @@ import torch
 from tqdm import tqdm
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-LANG_CODES = {"en": "eng_Latn", "so": "som_Latn"}
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
+import sugaan_mt  # noqa: E402
 
 
 def detect_device() -> str:
@@ -89,20 +91,11 @@ def load_pontoon(direction: str) -> list[tuple[str, str]]:
 LOADERS = {"flores": load_flores, "eval": load_eval_jsonl, "pontoon": load_pontoon}
 
 
-def is_nllb(model_id: str) -> bool:
-    return "nllb" in model_id.lower()
-
-
-def translate_batch(model, tok, texts, src, tgt, device, beams, max_len, nllb=True):
-    kwargs = {}
-    if nllb:
-        # NLLB is multilingual: the source language is set on the tokenizer and
-        # the target is forced as the first generated token.
-        tok.src_lang = LANG_CODES[src]
-        kwargs["forced_bos_token_id"] = tok.convert_tokens_to_ids(LANG_CODES[tgt])
-    enc = tok(texts, return_tensors="pt", padding=True, truncation=True, max_length=max_len).to(device)
+def translate_batch(model, tok, texts, src, tgt, device, beams, max_len, family):
+    enc, gen_kwargs = sugaan_mt.prepare(tok, texts, src, tgt, family, max_len)
+    enc = enc.to(device)
     with torch.no_grad():
-        out = model.generate(**enc, max_length=max_len, num_beams=beams, **kwargs)
+        out = model.generate(**enc, max_length=max_len, num_beams=beams, **gen_kwargs)
     return tok.batch_decode(out, skip_special_tokens=True)
 
 
@@ -121,9 +114,6 @@ def main():
 
     src, tgt = args.direction.split("-")
     device = args.device or detect_device()
-    nllb = is_nllb(args.model)
-    if not nllb and args.direction != "en-so":
-        raise SystemExit(f"{args.model} is a single-direction model; use --direction en-so")
     # fp16 on MPS still produces NaNs in some seq2seq stacks; fp32 is the safe default there.
     dtype = torch.float16 if device == "cuda" else torch.float32
 
@@ -138,6 +128,14 @@ def main():
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model, dtype=dtype).to(device)
     model.eval()
 
+    family = sugaan_mt.detect_family(model, tok)
+    warning = sugaan_mt.licence_warning(family)
+    if warning:
+        print(f"\n  !! {warning}\n")
+    if family == "marian" and args.direction != "en-so":
+        raise SystemExit(f"{args.model} is single-direction; use --direction en-so")
+    print(f"family: {family}")
+
     print(f"{args.testset} / {args.direction} / {len(pairs)} sentences / beams={args.beams}")
     hyps: list[str] = []
     start = time.time()
@@ -145,7 +143,7 @@ def main():
         hyps.extend(
             translate_batch(
                 model, tok, sources[i : i + args.batch_size], src, tgt,
-                device, args.beams, args.max_len, nllb=nllb,
+                device, args.beams, args.max_len, family,
             )
         )
     elapsed = time.time() - start

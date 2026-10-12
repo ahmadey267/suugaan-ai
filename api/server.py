@@ -21,14 +21,13 @@ import anthropic as anthropic_sdk
 from pydantic import BaseModel, Field
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
+import sugaan_mt
+
 HTML_FILE = Path(__file__).parent / "index.html"
 
-MODEL = os.environ.get("SUGAN_MODEL", "facebook/nllb-200-distilled-1.3B")
-
-LANG_CODES = {
-    "en": "eng_Latn",
-    "so": "som_Latn",
-}
+# MADLAD-400 is Apache-2.0. NLLB-200 is CC-BY-NC-4.0 and cannot back a paid
+# product, however well it scores.
+MODEL = os.environ.get("SUGAN_MODEL", "google/madlad400-3b-mt")
 
 state: dict = {}
 
@@ -90,16 +89,13 @@ def _translate_sentences(sentences: list[str], src: str, tgt: str) -> list[str]:
     tokenizer = state["tokenizer"]
     model = state["model"]
     device = state["device"]
-    tokenizer.src_lang = LANG_CODES[src]
-    inputs = tokenizer(
-        sentences, return_tensors="pt", padding=True, truncation=True, max_length=SENT_TOKEN_LIMIT
-    ).to(device)
+    inputs, gen_kwargs = sugaan_mt.prepare(
+        tokenizer, sentences, src, tgt, state["family"], SENT_TOKEN_LIMIT
+    )
+    inputs = inputs.to(device)
     with torch.no_grad():
         out = model.generate(
-            **inputs,
-            forced_bos_token_id=tokenizer.convert_tokens_to_ids(LANG_CODES[tgt]),
-            max_length=SENT_TOKEN_LIMIT,
-            num_beams=NUM_BEAMS,
+            **inputs, max_length=SENT_TOKEN_LIMIT, num_beams=NUM_BEAMS, **gen_kwargs
         )
     return [tokenizer.decode(o, skip_special_tokens=True).strip() for o in out]
 
@@ -146,14 +142,25 @@ def translate(text: str | list, src: str, tgt: str) -> str | list:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"  # Apple Silicon; without this the Mac served from CPU
+    else:
+        device = "cpu"
     print(f"Loading {MODEL} on {device}...")
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
-    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL, dtype=torch.float16).to(device)
+    # fp16 on MPS still produces NaNs in this stack; fp32 there.
+    dtype = torch.float16 if device == "cuda" else torch.float32
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL, dtype=dtype).to(device)
     model.eval()
     state["tokenizer"] = tokenizer
     state["model"] = model
     state["device"] = device
+    state["family"] = sugaan_mt.detect_family(model, tokenizer)
+    warning = sugaan_mt.licence_warning(state["family"])
+    if warning:
+        print(f"WARNING: {warning}")
     api_key_set = bool(os.environ.get("SUGAN_API_KEY"))
     print(f"Ready. API key auth: {'enabled' if api_key_set else 'DISABLED — set SUGAN_API_KEY'}")
     yield
@@ -225,6 +232,7 @@ def health():
     return {
         "status": "ok",
         "model": MODEL,
+        "family": state.get("family"),
         "auth_required": bool(os.environ.get("SUGAN_API_KEY", "")),
     }
 
