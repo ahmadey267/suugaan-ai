@@ -1,506 +1,584 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Sugan AI</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Sugaan AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Indigo-dyed cloth and frankincense resin, not flag colours. */
+    --ink:        #141B2E;
+    --ink-raised: #1B2440;
+    --rule:       #2C3759;
+    --chalk:      #F2EFE6;
+    --chalk-dim:  #8B95B2;
+    --saffron:    #E8A33D;
+    --rose:       #E2685B;
+    --serif: "Newsreader", Georgia, serif;
+    --sans:  "Archivo", system-ui, sans-serif;
+  }
 
-    :root {
-      --bg: #0f0f14;
-      --surface: #1a1a24;
-      --border: #2a2a38;
-      --user-bg: #4f46e5;
-      --bot-bg: #1e1e2e;
-      --text: #f1f1f5;
-      --muted: #6b6b80;
-      --accent: #818cf8;
-      --radius: 18px;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%;
-      height: 100dvh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      overflow: hidden;
-    }
+  html, body { height: 100%; height: 100dvh; }
 
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      height: 100dvh;
-      max-width: 680px;
-      margin: 0 auto;
-    }
+  body {
+    background: var(--ink);
+    color: var(--chalk);
+    font-family: var(--sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-    /* Header */
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 20px;
-      padding-top: max(16px, env(safe-area-inset-top));
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
+  :focus-visible {
+    outline: 2px solid var(--saffron);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 
-    .logo {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, #4f46e5, #818cf8);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-      color: white;
-      flex-shrink: 0;
-    }
+  /* ── Masthead ───────────────────────────────────────────── */
+  .masthead {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 18px 28px 16px;
+    border-bottom: 1px solid var(--rule);
+    flex: none;
+  }
 
-    .header-text h1 {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1;
-    }
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+  .wordmark em {
+    font-style: italic;
+    color: var(--saffron);
+  }
 
-    .header-text p {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+  .modes { display: flex; gap: 2px; margin-left: auto; }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: #22c55e;
-      border-radius: 50%;
-      margin-left: auto;
-      box-shadow: 0 0 6px #22c55e;
-    }
+  .mode {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--chalk-dim);
+    background: none;
+    border: 0;
+    padding: 7px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .mode:hover { color: var(--chalk); }
+  .mode[aria-selected="true"] { color: var(--ink); background: var(--chalk); }
 
-    /* Key setup banner */
-    #key-banner {
-      background: #2d1f00;
-      border-bottom: 1px solid #5a3e00;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: #fbbf24;
-    }
+  .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--chalk-dim);
+    align-self: center;
+  }
+  .pulse[data-state="up"]   { background: var(--saffron); }
+  .pulse[data-state="down"] { background: var(--rose); }
 
-    #key-banner input {
-      flex: 1;
-      background: #1a1200;
-      border: 1px solid #5a3e00;
-      border-radius: 8px;
-      padding: 6px 10px;
-      color: #fbbf24;
-      font-size: 13px;
-      font-family: monospace;
-      outline: none;
-    }
+  /* ── Key bar (only when the server enforces a key) ───────── */
+  .keybar {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 28px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--ink-raised);
+    font-size: 0.82rem;
+    flex: none;
+  }
+  .keybar[data-show="1"] { display: flex; }
+  .keybar label { color: var(--chalk-dim); }
+  .keybar input {
+    flex: 1; max-width: 340px;
+    background: var(--ink);
+    border: 1px solid var(--rule);
+    color: var(--chalk);
+    font: inherit;
+    padding: 7px 11px;
+    border-radius: 7px;
+  }
 
-    #key-banner button {
-      background: #fbbf24;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
+  /* ── The spread: two facing leaves ───────────────────────── */
+  .spread {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    min-height: 0;
+  }
+  .spread[hidden] { display: none; }
 
-    /* Messages */
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      scroll-behavior: smooth;
-    }
+  .leaf {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+  }
 
-    #messages::-webkit-scrollbar { width: 4px; }
-    #messages::-webkit-scrollbar-track { background: transparent; }
-    #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .leaf-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px 10px;
+    flex: none;
+  }
 
-    .msg-row {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-    }
+  .lang {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--chalk-dim);
+  }
 
-    .msg-row.user { flex-direction: row-reverse; }
+  .ghost {
+    margin-left: auto;
+    background: none;
+    border: 0;
+    color: var(--chalk-dim);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .ghost:hover:not(:disabled) { color: var(--chalk); background: var(--ink-raised); }
+  .ghost:disabled { opacity: 0.35; cursor: default; }
 
-    .avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #4f46e5, #818cf8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
+  .seam { background: var(--rule); position: relative; }
 
-    .bubble-wrap {
-      max-width: 75%;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+  .swap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: var(--ink-raised);
+    color: var(--chalk-dim);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    z-index: 2;
+  }
+  .swap:hover { color: var(--saffron); border-color: var(--saffron); }
+  .swap svg { width: 16px; height: 16px; fill: currentColor; }
 
-    .msg-row.user .bubble-wrap { align-items: flex-end; }
+  /* Source and target share one type treatment so the two columns read
+     as the same text in two languages, which is the whole point. */
+  .sheet {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 28px 24px;
+    font-family: var(--serif);
+    font-size: 1.22rem;
+    font-weight: 300;
+    line-height: 1.62;
+    letter-spacing: 0.002em;
+  }
 
-    .bubble {
-      padding: 10px 14px;
-      border-radius: var(--radius);
-      font-size: 15px;
-      line-height: 1.5;
-      word-break: break-word;
-    }
+  textarea.sheet {
+    width: 100%;
+    background: none;
+    border: 0;
+    color: var(--chalk);
+    resize: none;
+    font-family: var(--serif);
+  }
+  textarea.sheet::placeholder { color: var(--chalk-dim); opacity: 0.55; }
+  /* A box around a full-height writing area is too loud; mark the edge instead. */
+  textarea.sheet:focus-visible { outline: none; box-shadow: inset 2px 0 0 var(--saffron); }
 
-    .msg-row.user .bubble {
-      background: var(--user-bg);
-      color: white;
-      border-bottom-right-radius: 5px;
-    }
+  .target { color: var(--chalk); }
+  /* pre-wrap belongs on the paragraphs, not the container: on the container it
+     would render the source's own indentation as a leading blank line. */
+  .target p { white-space: pre-wrap; }
+  .target p + p { margin-top: 1em; }
 
-    .msg-row.bot .bubble {
-      background: var(--bot-bg);
-      color: var(--text);
-      border-bottom-left-radius: 5px;
-      border: 1px solid var(--border);
-    }
+  .invite {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--chalk-dim);
+    max-width: 34ch;
+  }
 
-    .bubble .en-text {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
+  .fade-in { animation: settle 420ms ease-out both; }
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: none; }
+  }
 
-    .time {
-      font-size: 11px;
-      color: var(--muted);
-      padding: 0 4px;
-    }
+  /* ── Foot ────────────────────────────────────────────────── */
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 28px 18px;
+    flex: none;
+  }
 
-    /* Typing indicator */
-    .typing .bubble {
-      padding: 12px 16px;
-    }
+  .count { font-size: 0.76rem; color: var(--chalk-dim); font-variant-numeric: tabular-nums; }
+  .hint  { font-size: 0.76rem; color: var(--chalk-dim); margin-left: auto; }
 
-    .dots {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
+  .go {
+    background: var(--saffron);
+    color: #1A1203;
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.87rem;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .go:disabled { opacity: 0.3; cursor: default; }
+  .go[data-busy="1"] { color: transparent; position: relative; }
+  .go[data-busy="1"]::after {
+    content: "";
+    position: absolute; inset: 0;
+    margin: auto;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(26,18,3,0.3);
+    border-top-color: #1A1203;
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-    .dots span {
-      width: 6px;
-      height: 6px;
-      background: var(--muted);
-      border-radius: 50%;
-      animation: bounce 1.2s infinite;
-    }
+  .notice { color: var(--rose); font-size: 0.82rem; font-family: var(--sans); }
 
-    .dots span:nth-child(2) { animation-delay: 0.2s; }
-    .dots span:nth-child(3) { animation-delay: 0.4s; }
+  /* ── Chat ────────────────────────────────────────────────── */
+  .thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  .thread[hidden] { display: none; }
 
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
-    }
+  .turns { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .turn { max-width: 62ch; margin: 0 auto 22px; }
+  .who {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    color: var(--chalk-dim);
+    margin-bottom: 5px;
+  }
+  .said {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .turn.them .said { color: var(--chalk); }
+  .turn.me .said { color: var(--chalk-dim); }
 
-    /* Welcome */
-    .welcome {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-    }
+  .composer {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    padding: 14px 28px 20px;
+    border-top: 1px solid var(--rule);
+    flex: none;
+  }
+  .composer textarea {
+    flex: 1;
+    max-width: 62ch;
+    margin: 0 auto;
+    background: var(--ink-raised);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    color: var(--chalk);
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 300;
+    padding: 11px 14px;
+    resize: none;
+    max-height: 140px;
+  }
 
-    .welcome .icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
+  @media (max-width: 760px) {
+    .masthead { padding: 14px 18px 12px; gap: 14px; }
+    .wordmark { font-size: 1.25rem; }
+    .spread { grid-template-columns: 1fr; grid-template-rows: 1fr 1px 1fr; }
+    .seam { height: 1px; }
+    .swap { width: 34px; height: 34px; }
+    .sheet { padding: 4px 18px 20px; font-size: 1.08rem; }
+    .leaf-head, .foot, .keybar, .turns, .composer { padding-left: 18px; padding-right: 18px; }
+    .hint { display: none; }  /* no keyboard shortcut to offer on a phone */
+  }
 
-    .welcome h2 {
-      font-size: 20px;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .welcome p {
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    /* Input */
-    #input-area {
-      padding: 12px 16px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-      flex-shrink: 0;
-    }
-
-    #msg-input {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 10px 16px;
-      color: var(--text);
-      font-size: 15px;
-      font-family: inherit;
-      outline: none;
-      resize: none;
-      max-height: 120px;
-      line-height: 1.4;
-      transition: border-color 0.2s;
-    }
-
-    #msg-input::placeholder { color: var(--muted); }
-    #msg-input:focus { border-color: var(--accent); }
-
-    #send-btn {
-      width: 42px;
-      height: 42px;
-      background: var(--user-bg);
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-
-    #send-btn:active { transform: scale(0.92); }
-    #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    #send-btn svg { width: 18px; height: 18px; fill: white; }
-  </style>
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: none; }
+    .go[data-busy="1"]::after { animation: none; }
+  }
+</style>
 </head>
 <body>
-<div id="app">
-  <header>
-    <div class="logo">S</div>
-    <div class="header-text">
-      <h1>Sugan AI</h1>
-      <p>English → Somali</p>
-    </div>
-    <div class="status-dot" id="status-dot"></div>
-  </header>
 
-  <div id="key-banner" style="display:none">
-    <span>API Key:</span>
-    <input type="password" id="key-input" placeholder="Enter your API key" />
-    <button onclick="saveKey()">Save</button>
+<header class="masthead">
+  <div class="wordmark">Sugaan <em>AI</em></div>
+  <div class="modes" role="tablist">
+    <button class="mode" id="tab-translate" role="tab" aria-selected="true" onclick="setMode('translate')">Translate</button>
+    <button class="mode" id="tab-chat" role="tab" aria-selected="false" onclick="setMode('chat')">Chat</button>
   </div>
+  <span class="pulse" id="pulse" title="Server status"></span>
+</header>
 
-  <div id="messages">
-    <div class="welcome" id="welcome">
-      <div class="icon">🌍</div>
-      <h2>Sugan AI</h2>
-      <p>Chat in English — I'll reply and translate everything to Somali.</p>
-    </div>
-  </div>
-
-  <div id="input-area">
-    <textarea id="msg-input" rows="1" placeholder="Type in English…"></textarea>
-    <button id="send-btn" onclick="send()" disabled>
-      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-    </button>
-  </div>
+<div class="keybar" id="keybar">
+  <label for="key">This server requires a key</label>
+  <input type="password" id="key" placeholder="X-API-Key" />
+  <button class="ghost" onclick="saveKey()">Save</button>
 </div>
 
+<main class="spread" id="view-translate">
+  <section class="leaf">
+    <div class="leaf-head">
+      <span class="lang" id="lang-src">English</span>
+      <button class="ghost" id="clear" onclick="clearAll()" disabled>Clear</button>
+    </div>
+    <textarea class="sheet" id="src" spellcheck="false" placeholder="Write something to translate."></textarea>
+    <div class="foot">
+      <button class="go" id="go" onclick="translateNow()" disabled>Translate</button>
+      <span class="count" id="count"></span>
+      <span class="hint" id="hint">⌘↵</span>
+    </div>
+  </section>
+
+  <div class="seam">
+    <button class="swap" id="swap" onclick="swapLangs()" title="Swap languages" aria-label="Swap languages">
+      <svg viewBox="0 0 24 24"><path d="M7 7h10l-3-3 1.4-1.4L20.8 8l-5.4 5.4L14 12l3-3H7V7zm10 10H7l3 3-1.4 1.4L3.2 16l5.4-5.4L10 12l-3 3h10v2z"/></svg>
+    </button>
+  </div>
+
+  <section class="leaf">
+    <div class="leaf-head">
+      <span class="lang" id="lang-tgt">Soomaali</span>
+      <button class="ghost" id="copy" onclick="copyOut()" disabled>Copy</button>
+    </div>
+    <div class="sheet target" id="out" aria-live="polite">
+      <p class="invite">Suugaan is the Somali word for poetry. Write on the left and read it here.</p>
+    </div>
+  </section>
+</main>
+
+<section class="thread" id="view-chat" hidden>
+  <div class="turns" id="turns">
+    <div class="turn them">
+      <div class="who">Sugaan AI</div>
+      <div class="said invite">Write in English and I answer in Somali. This needs an Anthropic key on the server.</div>
+    </div>
+  </div>
+  <div class="composer">
+    <textarea id="say" rows="1" placeholder="Write in English…"></textarea>
+    <button class="go" id="send" onclick="sendChat()" disabled>Send</button>
+  </div>
+</section>
+
 <script>
-  const API_BASE = window.location.origin;
+  const API = window.location.origin;
+  const $ = (id) => document.getElementById(id);
+
+  const LANGS = { en: "English", so: "Soomaali" };
+  let source = "en";
+  let mode = "translate";
   let apiKey = localStorage.getItem("sugan_api_key") || "";
   let history = [];
 
-  function init() {
-    if (!apiKey) {
-      document.getElementById("key-banner").style.display = "flex";
-      document.getElementById("send-btn").disabled = true;
-    } else {
-      document.getElementById("send-btn").disabled = false;
-      checkHealth();
+  const src = $("src"), out = $("out"), go = $("go"), say = $("say");
+
+  function target() { return source === "en" ? "so" : "en"; }
+
+  function headers() {
+    const h = { "Content-Type": "application/json" };
+    if (apiKey) h["X-API-Key"] = apiKey;
+    return h;
+  }
+
+  function setMode(next) {
+    mode = next;
+    $("tab-translate").setAttribute("aria-selected", String(next === "translate"));
+    $("tab-chat").setAttribute("aria-selected", String(next === "chat"));
+    $("view-translate").hidden = next !== "translate";
+    $("view-chat").hidden = next !== "chat";
+    (next === "translate" ? src : say).focus();
+  }
+
+  function swapLangs() {
+    source = target();
+    $("lang-src").textContent = LANGS[source];
+    $("lang-tgt").textContent = LANGS[target()];
+    src.placeholder = source === "en" ? "Write something to translate." : "Wax ku qor Af-Soomaali.";
+    // A finished translation becomes the new source, so swapping reads back.
+    const done = out.dataset.text;
+    if (done) { src.value = done; resetOut(); refresh(); }
+  }
+
+  function resetOut() {
+    out.dataset.text = "";
+    out.innerHTML = '<p class="invite">Suugaan is the Somali word for poetry. Write on the left and read it here.</p>';
+    $("copy").disabled = true;
+  }
+
+  function clearAll() { src.value = ""; resetOut(); refresh(); src.focus(); }
+
+  function refresh() {
+    const n = src.value.trim().length;
+    go.disabled = n === 0;
+    $("clear").disabled = n === 0 && !out.dataset.text;
+    $("count").textContent = n ? n + (n === 1 ? " character" : " characters") : "";
+  }
+
+  function render(text) {
+    out.dataset.text = text;
+    out.innerHTML = "";
+    text.split(/\n{2,}/).forEach((para) => {
+      const p = document.createElement("p");
+      p.className = "fade-in";
+      p.textContent = para;
+      out.appendChild(p);
+    });
+    $("copy").disabled = false;
+  }
+
+  function fail(message) {
+    out.dataset.text = "";
+    out.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "notice";
+    p.textContent = message;
+    out.appendChild(p);
+  }
+
+  async function translateNow() {
+    const text = src.value.trim();
+    if (!text) return;
+    go.dataset.busy = "1";
+    go.disabled = true;
+    try {
+      const res = await fetch(API + "/v1/translate", {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify({ text, source, target: target() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        $("keybar").dataset.show = "1";
+        fail("That key was rejected. Enter a valid one above.");
+      } else if (!res.ok) {
+        fail(data.detail || ("The server returned " + res.status + "."));
+      } else {
+        render(data.translation);
+      }
+    } catch {
+      fail("Could not reach the server. Check that it is running.");
     }
+    delete go.dataset.busy;
+    refresh();
+  }
+
+  async function copyOut() {
+    if (!out.dataset.text) return;
+    await navigator.clipboard.writeText(out.dataset.text);
+    const b = $("copy");
+    b.textContent = "Copied";
+    setTimeout(() => (b.textContent = "Copy"), 1400);
   }
 
   function saveKey() {
-    const val = document.getElementById("key-input").value.trim();
-    if (!val) return;
-    apiKey = val;
-    localStorage.setItem("sugan_api_key", val);
-    document.getElementById("key-banner").style.display = "none";
-    document.getElementById("send-btn").disabled = false;
-    checkHealth();
+    const v = $("key").value.trim();
+    if (!v) return;
+    apiKey = v;
+    localStorage.setItem("sugan_api_key", v);
+    $("keybar").dataset.show = "";
   }
 
-  async function checkHealth() {
+  function addTurn(who, text, cls) {
+    const t = document.createElement("div");
+    t.className = "turn " + cls;
+    const w = document.createElement("div");
+    w.className = "who";
+    w.textContent = who;
+    const s = document.createElement("div");
+    s.className = "said fade-in";
+    s.textContent = text;
+    t.append(w, s);
+    $("turns").append(t);
+    $("turns").scrollTop = $("turns").scrollHeight;
+    return s;
+  }
+
+  async function sendChat() {
+    const text = say.value.trim();
+    if (!text) return;
+    say.value = "";
+    say.style.height = "auto";
+    $("send").disabled = true;
+    addTurn("You", text, "me");
+    const pending = addTurn("Sugaan AI", "…", "them");
     try {
-      const r = await fetch(API_BASE + "/health");
-      if (r.ok) {
-        document.getElementById("status-dot").style.background = "#22c55e";
-        document.getElementById("status-dot").style.boxShadow = "0 0 6px #22c55e";
-      }
-    } catch {
-      document.getElementById("status-dot").style.background = "#ef4444";
-      document.getElementById("status-dot").style.boxShadow = "0 0 6px #ef4444";
-    }
-  }
-
-  const input = document.getElementById("msg-input");
-  const msgs = document.getElementById("messages");
-
-  input.addEventListener("input", function () {
-    this.style.height = "auto";
-    this.style.height = Math.min(this.scrollHeight, 120) + "px";
-    document.getElementById("send-btn").disabled = !this.value.trim() || !apiKey;
-  });
-
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  });
-
-  function now() {
-    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  function addMessage(text, role, soText) {
-    document.getElementById("welcome")?.remove();
-
-    const row = document.createElement("div");
-    row.className = "msg-row " + role;
-
-    if (role === "bot") {
-      const av = document.createElement("div");
-      av.className = "avatar";
-      av.textContent = "S";
-      row.appendChild(av);
-    }
-
-    const wrap = document.createElement("div");
-    wrap.className = "bubble-wrap";
-
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-
-    if (role === "bot" && soText) {
-      if (text) {
-        const en = document.createElement("div");
-        en.className = "en-text";
-        en.textContent = text;
-        bubble.appendChild(en);
-      }
-      bubble.appendChild(document.createTextNode(soText));
-    } else {
-      bubble.textContent = text;
-    }
-
-    const time = document.createElement("div");
-    time.className = "time";
-    time.textContent = now();
-
-    wrap.appendChild(bubble);
-    wrap.appendChild(time);
-    row.appendChild(wrap);
-    msgs.appendChild(row);
-    msgs.scrollTop = msgs.scrollHeight;
-    return row;
-  }
-
-  function addTyping() {
-    const row = document.createElement("div");
-    row.className = "msg-row bot typing";
-    row.id = "typing";
-
-    const av = document.createElement("div");
-    av.className = "avatar";
-    av.textContent = "S";
-
-    const wrap = document.createElement("div");
-    wrap.className = "bubble-wrap";
-
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
-    bubble.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-
-    wrap.appendChild(bubble);
-    row.appendChild(av);
-    row.appendChild(wrap);
-    msgs.appendChild(row);
-    msgs.scrollTop = msgs.scrollHeight;
-    return row;
-  }
-
-  async function send() {
-    const text = input.value.trim();
-    if (!text || !apiKey) return;
-
-    input.value = "";
-    input.style.height = "auto";
-    document.getElementById("send-btn").disabled = true;
-
-    addMessage(text, "user");
-    const typing = addTyping();
-
-    try {
-      const res = await fetch(API_BASE + "/v1/chat", {
+      const res = await fetch(API + "/v1/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": apiKey,
-        },
+        headers: headers(),
         body: JSON.stringify({ message: text, history }),
       });
-
-      typing.remove();
-
-      if (res.status === 401) {
-        addMessage("Invalid API key. Tap the key icon to update it.", "bot");
-        document.getElementById("key-banner").style.display = "flex";
-        return;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        pending.className = "said notice";
+        pending.textContent = data.detail || ("The server returned " + res.status + ".");
+      } else {
+        // The server leaves reply_en empty, so the Somali reply is the message.
+        pending.textContent = data.reply_so || data.reply_en || "";
+        history.push({ role: "user", content: text });
+        history.push({ role: "assistant", content: data.reply_so || "" });
+        if (history.length > 20) history = history.slice(-20);
       }
-
-      const data = await res.json();
-      history.push({ role: "user", content: text });
-      history.push({ role: "assistant", content: data.reply_en });
-      if (history.length > 20) history = history.slice(-20);
-
-      addMessage(data.reply_en, "bot", data.reply_so);
-    } catch (err) {
-      typing.remove();
-      addMessage("Connection error. Is the server running?", "bot");
+    } catch {
+      pending.className = "said notice";
+      pending.textContent = "Could not reach the server.";
     }
-
-    document.getElementById("send-btn").disabled = false;
-    input.focus();
   }
 
-  init();
+  async function health() {
+    try {
+      const r = await fetch(API + "/health");
+      const d = await r.json();
+      $("pulse").dataset.state = "up";
+      $("pulse").title = d.model || "ready";
+      // Only ask for a key when the server actually enforces one.
+      if (d.auth_required && !apiKey) $("keybar").dataset.show = "1";
+    } catch {
+      $("pulse").dataset.state = "down";
+      $("pulse").title = "Server unreachable";
+    }
+  }
+
+  src.addEventListener("input", refresh);
+  src.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); translateNow(); }
+  });
+
+  say.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 140) + "px";
+    $("send").disabled = !this.value.trim();
+  });
+  say.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+
+  if (!navigator.platform.toLowerCase().includes("mac")) $("hint").textContent = "Ctrl+↵";
+  refresh();
+  health();
+  src.focus();
 </script>
 </body>
 </html>
