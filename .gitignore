@@ -31,3 +31,9 @@ outputs/
 *.log
 wandb/
 runs/
+
+# Generated corpora and benchmarks — rebuild with scripts/build_corpus.py,
+# FLORES per docs/finetune-on-vast.md. Third-party data, kept out of the repo.
+data/clean/
+data/opus/
+data/flores/
