@@ -15,6 +15,20 @@
         "10100"
       ],
       "port": 10100
+    },
+    {
+      "name": "sugaan-website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "website",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "4321"
+      ],
+      "port": 4321
     }
   ]
 }

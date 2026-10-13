@@ -151,7 +151,7 @@ const en: SiteContent = {
   meta: {
     title: 'Sugan AI | Somali Language AI Lab',
     description:
-      'Sugan AI is a research lab building datasets, models and benchmarks for the Somali language.',
+      'Sugan AI is a research lab building the datasets, models and benchmarks that make AI work properly in Somali. The largest public English-Somali dataset is 96% scripture. We built the replacement.',
     siteName: 'Sugan AI',
     ogImageAlt: 'Sugan AI. AI that speaks Somali.',
   },
@@ -196,9 +196,9 @@ const en: SiteContent = {
     cta: { label: 'Partner with us', href: '#partner' },
   },
   hero: {
-    headline: 'AI that speaks Somali.',
+    headline: 'The Somali internet starts here.',
     supporting:
-      'Sugan AI is a research lab building the datasets, models and benchmarks that make artificial intelligence work properly in the Somali language.',
+      'More than 20 million people speak Somali. The machines that translate the world into other languages have treated it as a footnote, trained on scripture and evaluated against nothing. Sugan AI builds the datasets, models and benchmarks that fix that.',
     primary: { label: 'Partner with us', href: '#partner' },
     secondary: { label: 'Read the concept note' },
     small: 'A research initiative of AIVERSE Africa.',
@@ -214,13 +214,18 @@ const en: SiteContent = {
   },
   problem: {
     eyebrow: 'The problem',
-    heading: 'More than 20 million speakers. Almost no AI built for them.',
-    body: 'Somali is spoken across Somalia, Ethiopia, Kenya, Djibouti and a global diaspora. Yet the AI tools the world now relies on handle it poorly. That leaves governments, businesses and students working in a second language, or going without.',
+    heading: 'Somali AI is broken, and the reason is sitting in plain sight.',
+    body: 'The largest public English-Somali dataset holds 161,865 sentence pairs. We counted what is in it: 93,844 Qur\'an verses, 62,195 Bible verses, and 5,826 of everything else. Ninety-six percent scripture. Train on that and you get a model that renders a rental notice in the cadence of a sacred text. The datasets get cited, the models get published, the scores look fine. Nobody opens the file.',
     columns: ['Gap', 'What goes wrong', 'What we build'],
     gaps: [
       {
+        title: 'Data.',
+        body: 'Ninety-six percent of the public English-Somali corpus is Qur\'an and Bible verse, and nine in ten pairs still carry the spacing artifacts of a decade-old tokenizer. A model trained on it learns a register nobody writes in.',
+        addressedBy: ['Data'],
+      },
+      {
         title: 'Text.',
-        body: 'General purpose models write weak Somali, mix dialects and mistranslate formal, legal and religious vocabulary.',
+        body: 'General purpose models write weak Somali, mix dialects and mistranslate formal and legal vocabulary. Fluent enough to pass a glance, wrong where it costs something.',
         addressedBy: ['Data', 'Models'],
       },
       {
@@ -230,12 +235,12 @@ const en: SiteContent = {
       },
       {
         title: 'Measurement.',
-        body: 'There is no widely accepted benchmark to show which models are good enough for real work.',
+        body: 'Almost nothing published for Somali reports a score on a held-out test set. A quality claim without one is a press release.',
         addressedBy: ['Benchmark'],
       },
       {
         title: 'Ownership.',
-        body: 'The little capability that exists sits inside foreign systems, outside the control of Somali institutions.',
+        body: 'The little capability that exists sits inside foreign systems, and the best-known open translation model is licensed for research only. Institutions cannot build on what they are not allowed to deploy.',
         addressedBy: ['Models', 'Data'],
       },
     ],
@@ -246,17 +251,17 @@ const en: SiteContent = {
     blocks: [
       {
         title: 'Data.',
-        body: 'A curated Somali corpus drawn from government documents, news, literature and religious texts. Cleaned, tagged by dialect and domain, with clear provenance.',
-        detail: ['government', 'news', 'literature', 'religious'],
+        body: 'A curated Somali corpus built from human translations, not scraped text: civic guidance, public health, software interfaces, talks and encyclopedic prose. Cleaned, deduplicated and filtered, with clear provenance for every pair.',
+        detail: ['civic', 'health', 'software', 'talks'],
       },
       {
         title: 'Models.',
-        body: 'Efficient open weight models adapted for Somali. Small enough to run locally, offline and on modest hardware.',
-        detail: ['open weights', 'runs locally', 'works offline', 'modest hardware'],
+        body: 'Open weight models adapted for Somali, on a base licensed to actually ship. Three billion parameters, a vocabulary that carries Somali as its own token rather than inferring it from a neighbour, and sentence-level decoding so long documents do not lose their last paragraph.',
+        detail: ['Apache 2.0', 'both directions', 'runs offline', 'sentence-level'],
       },
       {
         title: 'Benchmark.',
-        body: 'A public evaluation suite for Somali covering translation, comprehension and formal writing, scored by both metrics and native speakers.',
+        body: 'A public evaluation suite for Somali covering translation, comprehension and formal writing, scored by both metrics and native speakers. We publish the harness, not just the number, so anyone can reproduce it.',
         detail: ['translation', 'comprehension', 'formal writing'],
       },
       {
@@ -266,7 +271,7 @@ const en: SiteContent = {
       },
     ],
     dataTags: ['dialect', 'domain', 'provenance'],
-    closing: 'We publish what we measure. Every model we release comes with its scores.',
+    closing: 'We publish what we measure. Every model we release comes with its scores and the harness that produced them.',
   },
   approach: {
     eyebrow: 'Approach',
@@ -282,7 +287,7 @@ const en: SiteContent = {
       },
       {
         title: 'Evidence over claims.',
-        body: 'We test every model against a Somali benchmark and against native speaker judgement before we say anything about it.',
+        body: 'We measure the base model before we change it, and we keep the number even when it is unflattering. A fine-tune that does not beat its baseline does not ship.',
       },
     ],
   },
@@ -319,23 +324,39 @@ const en: SiteContent = {
   },
   useCases: {
     eyebrow: 'Use cases',
-    heading: 'What Somali AI makes possible.',
+    heading: 'This is not a vertical. It is a language.',
     items: [
       {
-        title: 'Public services.',
-        body: 'Ministries and agencies drafting, translating and answering in the language citizens speak.',
+        title: 'Business.',
+        body: 'Remittance flows, telecoms, logistics, import and export. Somali commerce moves at global scale and gets served by machine translation built for French.',
       },
       {
-        title: 'Banking and telecoms.',
-        body: 'Customer service that understands Somali, in text and voice.',
+        title: 'Media.',
+        body: 'News desks, subtitles, podcasts, scripts. The Somali language internet is a fraction of what it should be, and most of the gap is translation cost.',
+      },
+      {
+        title: 'Developers.',
+        body: 'One call, both directions. Add Somali in an afternoon instead of arguing for it in a quarterly roadmap.',
       },
       {
         title: 'Education.',
-        body: "Tutoring and learning tools in a student's mother tongue.",
+        body: 'Classrooms, course material, research. Students who read the lesson in their own language learn the lesson, not the English.',
       },
       {
-        title: 'Translation.',
-        body: 'Reliable English and Somali translation for institutions, media and NGOs.',
+        title: 'Public services.',
+        body: 'Forms, notices, guidance. The documents where a wrong word costs somebody a benefit they qualified for.',
+      },
+      {
+        title: 'Healthcare.',
+        body: 'Intake, consent, dosage. Still the place where accuracy is least negotiable.',
+      },
+      {
+        title: 'Translators.',
+        body: 'A first draft worth editing instead of rewriting. The model takes the volume, you keep the judgment.',
+      },
+      {
+        title: 'Families.',
+        body: 'The letter from the school. The notice from the landlord. The voice note from home.',
       },
     ],
   },
