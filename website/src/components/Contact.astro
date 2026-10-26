@@ -18,12 +18,16 @@ const messages = {
 };
 ---
 
-<section id="contact" aria-labelledby="contact-heading" class="section-pad">
-  <div class="container-page">
+<section id="contact" aria-labelledby="contact-heading" class="relative section-pad pt-0!">
+  <div class="aura-field" aria-hidden="true">
+    <div class="aura aura-sky top-[20%] right-[-120px] h-[520px] w-[640px] opacity-40!"></div>
+    <div class="aura aura-peach bottom-[0%] left-[-160px] h-[460px] w-[600px] opacity-40!"></div>
+  </div>
+  <div class="container-page relative">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-8">
       <div class="lg:col-span-4" data-reveal>
-        <p class="eyebrow flex items-center gap-2.5 text-gold-2">
-          <span class="size-1.5 rounded-full bg-gold" aria-hidden="true"></span>
+        <p class="chip">
+          <span class="size-1.5 rounded-full bg-[linear-gradient(135deg,#4189dd,#d9a92a)]" aria-hidden="true"></span>
           {c.contact.eyebrow}
         </p>
         <h2 id="contact-heading" class="display mt-6 text-h2 text-fg">{c.contact.heading}</h2>
@@ -34,7 +38,7 @@ const messages = {
         action="/api/contact"
         method="post"
         novalidate
-        class="card grid gap-x-5 gap-y-6 p-6 sm:p-8 md:grid-cols-2 lg:col-span-8 lg:p-10"
+        class="glass grid gap-x-5 gap-y-6 p-6 sm:p-8 md:grid-cols-2 lg:col-span-8 lg:p-10"
         data-messages={JSON.stringify(messages)}
         data-reveal
       >
@@ -85,7 +89,7 @@ const messages = {
         </div>
 
         <div class="flex flex-col items-start gap-4 md:col-span-2">
-          <button type="submit" class="btn btn-gold">{c.contact.submit}</button>
+          <button type="submit" class="btn btn-primary">{c.contact.submit}</button>
           <p id="contact-status" role="status" aria-live="polite" class="min-h-[1.55em] text-small"></p>
         </div>
       </form>
