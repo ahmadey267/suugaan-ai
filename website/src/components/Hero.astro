@@ -27,8 +27,8 @@ const after = at >= 0 ? h.slice(at + accent.length) : '';
   </div>
 
   <div class="container-page relative pt-[calc(var(--header-h)+3.5rem)] pb-16 text-center md:pt-[calc(var(--header-h)+5rem)] lg:pt-[calc(var(--header-h)+6.5rem)] lg:pb-24">
-    <a href="#roadmap" class="hero-fade chip mx-auto h-9! px-1.5! pr-4! no-underline transition-transform duration-500 hover:-translate-y-0.5" style="--i:0">
-      <span class="flex h-6 items-center gap-1.5 rounded-full bg-sky-soft px-2.5 text-sky-ink">
+    <a href="#roadmap" class="hero-fade chip mx-auto no-underline hover:text-fg" style="--i:0">
+      <span class="flex items-center gap-1.5 text-sky-ink">
         <span class="size-1.5 animate-pulse rounded-full bg-sky" aria-hidden="true"></span>
         {c.ui.statusLabels[phase.status]}
       </span>
@@ -56,16 +56,9 @@ const after = at >= 0 ? h.slice(at + accent.length) : '';
 
     <!-- Signature: the alphabet as a waveform, on a glass panel -->
     <div class="hero-fade relative mx-auto mt-16 max-w-[1180px] text-left sm:mt-20 lg:mt-24" style="--i:4">
-      <div class="glass glass-edge p-5 sm:p-8 lg:p-10">
+      <div class="glass">
         <Waveform label={c.hero.alphabetLabel} caption={c.hero.alphabetCaption} summary={c.hero.alphabetSummary} />
       </div>
-      <!-- Floating notes on two of the sounds English does not have -->
-      <span class="chip absolute -top-4 left-6 hidden sm:inline-flex lg:-left-6" aria-hidden="true">
-        <span class="text-gradient text-[0.9375rem] font-semibold">x</span> /ħ/ voiceless pharyngeal
-      </span>
-      <span class="chip absolute -right-3 -bottom-4 hidden sm:inline-flex lg:-right-6" aria-hidden="true">
-        <span class="text-gradient text-[0.9375rem] font-semibold">c</span> /ʕ/ voiced pharyngeal
-      </span>
     </div>
   </div>
 </section>

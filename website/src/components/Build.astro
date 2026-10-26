@@ -36,7 +36,7 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
           <StatusPill status={statusFor(data.title)} label={c.ui.statusLabels[statusFor(data.title)]} />
         </div>
         <p class="mt-4 text-fg-2">{data.body}</p>
-        <div class="well mt-8 p-5 font-mono text-code text-fg-2 lg:mt-auto" aria-hidden="true">
+        <div class="well mt-8 p-5 font-mono text-code text-fg-2" aria-hidden="true">
           <p class="text-fg">corpus/</p>
           {data.detail.map((d, j) => (
             <p class="flex items-center gap-3">
@@ -44,8 +44,8 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
               {d}/
             </p>
           ))}
-          <p class="mt-4 flex flex-wrap gap-1.5">
-            {c.build.dataTags.map((t) => <span class="rounded-full bg-sky-soft px-2.5 py-0.5 text-sky-ink">{t}</span>)}
+          <p class="mt-4 flex flex-wrap gap-3">
+            {c.build.dataTags.map((t) => <span class="text-sky-ink">#{t}</span>)}
           </p>
         </div>
       </li>

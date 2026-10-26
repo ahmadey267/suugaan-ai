@@ -8,9 +8,9 @@ interface Props {
 const { c } = Astro.props;
 ---
 
-<header id="site-header" class="fixed inset-x-0 top-0 z-50 pt-3 sm:pt-4">
+<header id="site-header" class="site-header fixed inset-x-0 top-0 z-50">
   <div class="container-page">
-    <div class="site-header-pill glass flex h-14 items-center justify-between gap-3 rounded-full! py-0 pr-2 pl-4 sm:pl-5">
+    <div class="flex h-(--header-h) items-center justify-between gap-3">
       <a href="#top" class="flex items-center gap-2.5 text-fg no-underline" data-placeholder="logo">
         <Logo />
         <span class="text-[1.0625rem] font-medium tracking-[-0.02em] whitespace-nowrap max-[400px]:sr-only">{c.meta.siteName}</span>
@@ -21,7 +21,7 @@ const { c } = Astro.props;
           {
             c.nav.items.map((item) => (
               <li>
-                <a href={item.href} class="rounded-full px-4 py-2 text-[0.9375rem] text-fg-2 transition-colors duration-300 hover:bg-white/80 hover:text-fg">
+                <a href={item.href} class="px-4 py-2 text-[0.9375rem] text-fg-2 transition-colors duration-300 hover:text-fg">
                   {item.label}
                 </a>
               </li>
@@ -46,12 +46,12 @@ const { c } = Astro.props;
       </div>
     </div>
 
-    <nav id="mobile-menu" aria-label={c.ui.primaryNavLabel} class="glass mt-2 hidden p-2 lg:hidden">
+    <nav id="mobile-menu" aria-label={c.ui.primaryNavLabel} class="hidden border-t border-line pb-4 lg:hidden">
       <ul class="flex flex-col">
         {
           c.nav.items.map((item) => (
             <li>
-              <a href={item.href} class="block rounded-2xl px-4 py-3.5 text-[1.25rem] font-light tracking-[-0.02em] text-fg hover:bg-white/80">
+              <a href={item.href} class="block border-b border-line py-3.5 text-[1.25rem] font-light tracking-[-0.02em] text-fg">
                 {item.label}
               </a>
             </li>
@@ -78,6 +78,7 @@ const { c } = Astro.props;
       toggle.setAttribute('aria-expanded', String(open));
       toggle.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
       menu.classList.toggle('hidden', !open);
+      header?.classList.toggle('is-scrolled', open || window.scrollY > 12);
     };
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
     menu.addEventListener('click', (e) => {

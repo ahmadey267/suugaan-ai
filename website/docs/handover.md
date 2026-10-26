@@ -4,7 +4,7 @@ The marketing site for Sugan AI. One static page, nine sections, built with Astr
 
 ## Design direction
 
-The live design is direction D, chosen by Ahmed: a warm white page with film grain, frosted glass panels and a floating glass header, lit by soft colour fields drawn from the Somali flag blue and Sugan gold. The alphabet waveform from direction C stays as the hero signature, now on a glass panel, and the problem section shows the counted composition of the largest public English-Somali dataset as a proportional bar. Earlier directions are recorded in `design-spec.md` and the git history. Tokens are at the top of `src/styles/global.css`.
+The live design is direction D, chosen by Ahmed: a warm white page with film grain, lit by soft colour fields drawn from the Somali flag blue and Sugan gold. There are no cards, panels or shadowed boxes (Ahmed's call): content sits directly on the page, divided by hairlines, and form fields are underlined rather than boxed. The alphabet waveform from direction C stays as the hero signature, set directly on the page, and the problem section shows the counted composition of the largest public English-Somali dataset as a proportional bar. Earlier directions are recorded in `design-spec.md` and the git history. Tokens are at the top of `src/styles/global.css`.
 
 ## 1. Run it locally
 
