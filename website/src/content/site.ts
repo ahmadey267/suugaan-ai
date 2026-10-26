@@ -70,6 +70,9 @@ export interface SiteContent {
     alphabetLabel: string;
     alphabetCaption: string;
     alphabetSummary: string;
+    /** Caption under the hero field of squares (one square per ~100 sentence pairs of problem.dataset). */
+    fieldCaption: string;
+    fieldLabel: string;
   };
   problem: {
     eyebrow: string;
@@ -222,6 +225,8 @@ const en: SiteContent = {
     alphabetLabel: 'The Somali Latin alphabet: 21 consonants and 5 vowels, each shown with its sound.',
     alphabetCaption: 'The Somali Latin alphabet, set as a waveform. Highlighted letters are sounds English does not have.',
     alphabetSummary: '26 letters · 21 consonants · 5 vowels',
+    fieldCaption: 'Each square is about 100 sentence pairs in the largest public English-Somali dataset.',
+    fieldLabel: 'A field of squares showing the largest public English-Somali dataset. Almost all of it is Qur\'an and Bible verse; a small corner is everything else.',
   },
   problem: {
     eyebrow: 'The problem',

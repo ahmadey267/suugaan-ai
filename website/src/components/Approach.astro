@@ -1,6 +1,5 @@
 ---
 import type { SiteContent } from '../content/site';
-import SectionHeading from './SectionHeading.astro';
 
 interface Props {
   c: SiteContent;
@@ -8,25 +7,18 @@ interface Props {
 const { c } = Astro.props;
 ---
 
-<section id="approach" aria-labelledby="approach-heading" class="relative section-pad">
-  <div class="aura-field" aria-hidden="true">
-    <div class="aura aura-lilac top-[25%] left-1/2 h-[560px] w-[900px] -translate-x-1/2 opacity-40!"></div>
-  </div>
-  <div class="container-page relative">
-    <SectionHeading eyebrow={c.approach.eyebrow} heading={c.approach.heading} headingId="approach-heading" center />
-
-    <ol class="mt-14 grid gap-4 md:grid-cols-3 lg:mt-20">
+<section id="approach" aria-labelledby="approach-heading" class="section">
+  <div class="container-page">
+    <h2 id="approach-heading" class="text-h2 text-ink">{c.approach.heading}</h2>
+    <div class="mt-14 flex flex-col gap-14 lg:mt-20 lg:gap-20">
       {
-        c.approach.principles.map((p, i) => (
-          <li class="glass glass-hover flex flex-col p-7 lg:p-9" data-reveal style={`--reveal-i:${i}`}>
-            <span class="display text-gradient text-[4rem] leading-none tracking-[-0.06em]" aria-hidden="true">
-              0{i + 1}
-            </span>
-            <h3 class="display mt-10 text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-[1.08] tracking-[-0.035em]">{p.title}</h3>
-            <p class="mt-4 text-fg-2">{p.body}</p>
-          </li>
+        c.approach.principles.map((p) => (
+          <div class="grid gap-4 lg:grid-cols-12 lg:gap-x-10">
+            <h3 class="text-[clamp(1.75rem,1.3rem+1.6vw,2.625rem)] leading-[1.1] font-light tracking-[-0.025em] text-ink lg:col-span-5">{p.title}</h3>
+            <p class="max-w-[36rem] text-lead text-ink-2 lg:col-span-6 lg:col-start-7 lg:pt-2">{p.body}</p>
+          </div>
         ))
       }
-    </ol>
+    </div>
   </div>
 </section>

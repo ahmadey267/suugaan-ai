@@ -1,0 +1,155 @@
+---
+/**
+ * The largest public English-Somali dataset drawn as squares, one per ~100 sentence pairs.
+ * On load the squares start shuffled and sort into their categories, so the share that is
+ * scripture becomes visible at once. Counts come from site.ts (problem.dataset).
+ * Without JavaScript or with reduced motion, the sorted state is drawn directly.
+ */
+import type { SiteContent } from '../content/site';
+
+interface Props {
+  c: SiteContent;
+}
+const { c } = Astro.props;
+const d = c.problem.dataset;
+const fmt = (n: number) => n.toLocaleString('en-GB');
+const colors = ['#9aa2ad', '#d3d7dd', '#4189dd'];
+const payload = JSON.stringify({ total: d.total, parts: d.parts.map((p) => p.value), colors });
+---
+
+<figure class="data-field" data-field={payload}>
+  <canvas class="block w-full" role="img" aria-label={c.hero.fieldLabel}></canvas>
+  <figcaption class="mt-5 text-small text-muted">
+    <span>{c.hero.fieldCaption}</span>
+    <span class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+      {
+        d.parts.map((p, i) => (
+          <button type="button" class="legend-item cursor-default text-left text-ink-2" data-part={i}>
+            <span class="swatch" style={`background:${colors[i]}`} aria-hidden="true" />
+            {p.label} <span class="text-ink">{fmt(p.value)}</span>
+          </button>
+        ))
+      }
+    </span>
+  </figcaption>
+</figure>
+
+<script>
+  type Data = { total: number; parts: number[]; colors: string[] };
+
+  document.querySelectorAll<HTMLElement>('.data-field').forEach((fig) => {
+    const canvas = fig.querySelector('canvas')!;
+    const ctx = canvas.getContext('2d')!;
+    const data: Data = JSON.parse(fig.dataset.field!);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // One square per ~100 pairs; the last category takes the rounding remainder.
+    const n = Math.round(data.total / 100);
+    const counts = data.parts.map((v) => Math.round(v / 100));
+    counts[counts.length - 1] = n - counts.slice(0, -1).reduce((a, b) => a + b, 0);
+    const cat: number[] = [];
+    counts.forEach((k, i) => { for (let j = 0; j < k; j++) cat.push(i); });
+
+    // Seeded shuffle so the starting scramble is the same every visit.
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const start = cat.map((_, i) => i);
+    for (let i = start.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [start[i], start[j]] = [start[j], start[i]];
+    }
+
+    let cols = 46, pitch = 12, size = 9, rows = 0, dpr = 1;
+    let highlight = -1;
+    let progress = reduce ? 1 : 0;
+
+    function layout() {
+      const w = canvas.clientWidth || fig.clientWidth;
+      cols = w < 480 ? 36 : 46;
+      pitch = Math.floor(w / cols);
+      size = Math.max(3, pitch - (pitch >= 10 ? 3 : 2));
+      rows = Math.ceil(n / cols);
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      const h = rows * pitch;
+      canvas.style.height = `${h}px`;
+      canvas.width = Math.round(cols * pitch * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    const ease = (t: number) => 1 - Math.pow(1 - t, 4);
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < n; i++) {
+        // Squares settle in reading order, so the sort sweeps across the field.
+        const local = Math.min(1, Math.max(0, progress * 1.6 - (i / n) * 0.6));
+        const k = ease(local);
+        const from = start[i];
+        const fx = (from % cols) * pitch, fy = Math.floor(from / cols) * pitch;
+        const tx = (i % cols) * pitch, ty = Math.floor(i / cols) * pitch;
+        const x = fx + (tx - fx) * k, y = fy + (ty - fy) * k;
+        const c = cat[i];
+        ctx.globalAlpha = highlight === -1 || highlight === c ? 1 : 0.22;
+        ctx.fillStyle = data.colors[c];
+        if (progress < 1) {
+          // Plain squares while moving: cheap enough for low-end phones.
+          ctx.fillRect(x, y, size, size);
+        } else {
+          ctx.beginPath();
+          ctx.roundRect(x, y, size, size, Math.min(2, size / 4));
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    layout();
+    draw();
+
+    if (!reduce) {
+      // The page's one orchestrated moment: shuffled, then sorted. It plays once, when the
+      // field is actually on screen, so on phones it is not spent above the fold.
+      const delay = 350, duration = 1700;
+      const play = () => {
+        let t0 = 0;
+        const step = (now: number) => {
+          if (!t0) t0 = now;
+          progress = Math.min(1, Math.max(0, (now - t0 - delay) / duration));
+          draw();
+          if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+              io.disconnect();
+              play();
+            }
+          },
+          { threshold: 0.35 },
+        );
+        io.observe(canvas);
+      } else {
+        play();
+      }
+    }
+
+    let raf = 0;
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => { layout(); draw(); });
+    });
+
+    // Pointing at a legend entry isolates that part of the dataset.
+    fig.querySelectorAll<HTMLButtonElement>('.legend-item').forEach((btn) => {
+      const on = () => { highlight = Number(btn.dataset.part); draw(); };
+      const off = () => { highlight = -1; draw(); };
+      btn.addEventListener('mouseenter', on);
+      btn.addEventListener('mouseleave', off);
+      btn.addEventListener('focus', on);
+      btn.addEventListener('blur', off);
+    });
+  });
+</script>

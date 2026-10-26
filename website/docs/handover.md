@@ -4,7 +4,7 @@ The marketing site for Sugan AI. One static page, nine sections, built with Astr
 
 ## Design direction
 
-The live design is direction D, chosen by Ahmed: a warm white page with film grain, lit by soft colour fields drawn from the Somali flag blue and Sugan gold. There are no cards, panels or shadowed boxes (Ahmed's call): content sits directly on the page, divided by hairlines, and form fields are underlined rather than boxed. The alphabet waveform from direction C stays as the hero signature, set directly on the page, and the problem section shows the counted composition of the largest public English-Somali dataset as a proportional bar. Earlier directions are recorded in `design-spec.md` and the git history. Tokens are at the top of `src/styles/global.css`.
+The live design is direction E, rebuilt with the frontend-design and design-critique skills. One bold element: the hero draws the largest public English-Somali dataset as about 1,619 squares (one per ~100 sentence pairs, counts from `problem.dataset` in `site.ts`). They start shuffled and sort themselves once, when first on screen, so the share that is scripture (grey) against everything else (Somali flag blue) is visible at a glance. Hovering or focusing a legend entry isolates that part. Everything else is deliberately quiet: cool white with film grain, deep navy ink, Outfit only, no cards or shadowed boxes, no all-caps or monospace labels, numbering only on the roadmap (a real sequence), and gold only on the main action. Earlier directions are in `design-spec.md` and the git history.
 
 ## 1. Run it locally
 
@@ -109,8 +109,8 @@ Checked on the Cloudflare local runtime (`wrangler pages dev`) with Chromium.
 
 | Check | Result |
 | --- | --- |
-| Lighthouse, mobile | Performance 98, Accessibility 100, Best Practices 100, SEO 100. LCP 2.1s, TBT 0ms, CLS 0 (local static server without compression) |
-| Lighthouse, desktop | 100, 100, 100, 100. LCP 0.5s, CLS 0 |
+| Lighthouse, mobile | 100, 100, 100, 100. TBT 0ms, CLS 0 (local static server) |
+| Lighthouse, desktop | 100, 100, 100, 100. LCP 0.3s, CLS 0 |
 | Widths 360, 768, 1280, 1440 | No horizontal scroll, every section checked visually |
 | Keyboard | Skip link is the first tab stop, visible focus everywhere, menu opens and closes with Escape and returns focus |
 | Reduced motion | Reveals and smooth scroll disabled |
