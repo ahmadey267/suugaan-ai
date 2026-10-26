@@ -1,32 +1,13 @@
 ---
 interface Props {
-  eyebrow: string;
   heading: string;
   headingId: string;
   intro?: string;
-  center?: boolean;
 }
-const { eyebrow, heading, headingId, intro, center = false } = Astro.props;
-// First sentence dark, the rest softened.
-const [first, ...rest] = heading.split(/(?<=\.)\s+/);
+const { heading, headingId, intro } = Astro.props;
 ---
 
-<div
-  class:list={['grid gap-8', center ? 'mx-auto max-w-[56rem] text-center' : 'lg:grid-cols-12 lg:items-end lg:gap-x-8']}
-  data-reveal
->
-  <div class:list={[!center && 'lg:col-span-8']}>
-    <p class="chip">
-      {eyebrow}
-    </p>
-    <h2 id={headingId} class:list={['display mt-6 text-h2 text-fg', center ? 'mx-auto max-w-[20ch]' : 'max-w-[18ch]']}>
-      {first}
-      {rest.length > 0 && <span class="text-dim"> {rest.join(' ')}</span>}
-    </h2>
-  </div>
-  {
-    intro && (
-      <p class:list={['text-lead text-fg-2', center ? 'mx-auto max-w-[52ch]' : 'max-w-[44ch] lg:col-span-4 lg:pb-2']}>{intro}</p>
-    )
-  }
+<div class="grid gap-6 lg:grid-cols-12 lg:gap-x-10">
+  <h2 id={headingId} class="text-h2 text-ink lg:col-span-7">{heading}</h2>
+  {intro && <p class="max-w-[38rem] text-lead text-ink-2 lg:col-span-5 lg:pt-3">{intro}</p>}
 </div>

@@ -8,25 +8,15 @@ interface Props {
 const { c } = Astro.props;
 ---
 
-<section id="use-cases" aria-labelledby="use-cases-heading" class="relative section-pad">
-  <div class="aura-field" aria-hidden="true">
-    <div class="aura aura-gold top-[30%] left-[-120px] h-[520px] w-[640px] opacity-45!"></div>
-    <div class="aura aura-lilac top-[50%] right-[-160px] h-[520px] w-[640px] opacity-40!"></div>
-  </div>
-  <div class="container-page relative">
-    <SectionHeading eyebrow={c.useCases.eyebrow} heading={c.useCases.heading} headingId="use-cases-heading" />
-
-    <ul class="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+<section id="use-cases" aria-labelledby="use-cases-heading" class="section">
+  <div class="container-page">
+    <SectionHeading heading={c.useCases.heading} headingId="use-cases-heading" />
+    <ul class="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:mt-24 lg:grid-cols-4">
       {
-        c.useCases.items.map((item, i) => (
-          <li class="glass glass-hover group flex flex-col p-6" data-reveal style={`--reveal-i:${i % 4}`}>
-            <span class="font-mono text-[0.75rem] text-muted tabular-nums" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h3 class="display mt-6 text-[1.75rem] leading-[1.05] tracking-[-0.035em] transition-colors duration-500">
-              <span class="hover-gradient">{item.title}</span>
-            </h3>
-            <p class="mt-3 text-small text-fg-2">{item.body}</p>
+        c.useCases.items.map((item) => (
+          <li>
+            <h3 class="text-h3 text-ink">{item.title}</h3>
+            <p class="mt-2 text-small text-ink-2">{item.body}</p>
           </li>
         ))
       }

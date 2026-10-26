@@ -6,41 +6,28 @@ interface Props {
   c: SiteContent;
 }
 const { c } = Astro.props;
-const initials = (name: string) =>
-  name
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('');
+const initials = (name: string) => name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
 ---
 
-<section id="team" aria-labelledby="team-heading" class="relative section-pad">
-  <div class="aura-field" aria-hidden="true">
-    <div class="aura aura-sky top-[40%] left-1/2 h-[520px] w-[900px] -translate-x-1/2 opacity-40!"></div>
-  </div>
-  <div class="container-page relative">
-    <SectionHeading eyebrow={c.team.eyebrow} heading={c.team.heading} headingId="team-heading" intro={c.team.note} />
-
-    <ul class="mt-16 grid gap-4 md:grid-cols-2 lg:mt-24">
+<section id="team" aria-labelledby="team-heading" class="section bg-white">
+  <div class="container-page">
+    <SectionHeading heading={c.team.heading} headingId="team-heading" intro={c.team.note} />
+    <ul class="mt-16 grid gap-14 md:grid-cols-2 md:gap-10 lg:mt-24">
       {
-        c.team.founders.map((f, i) => (
-          <li class="glass glass-hover grid gap-6 p-5 sm:grid-cols-[11rem_1fr] sm:p-6 lg:grid-cols-[13rem_1fr] lg:gap-8" data-reveal style={`--reveal-i:${i}`}>
+        c.team.founders.map((f) => (
+          <li class="grid gap-6 sm:grid-cols-[9rem_1fr] sm:gap-8">
             {f.photo ? (
-              <img src={f.photo} alt={f.name} width="416" height="520" loading="lazy" decoding="async" class="aspect-[4/5] w-full max-w-[13rem] object-cover" />
+              <img src={f.photo} alt={f.name} width="288" height="360" loading="lazy" decoding="async" class="aspect-[4/5] w-36 object-cover" />
             ) : (
-              <div
-                class="relative flex aspect-[4/5] w-full max-w-[13rem] flex-col justify-between overflow-hidden bg-[radial-gradient(120%_90%_at_10%_0%,rgb(142_197_255/0.9),transparent_60%),radial-gradient(90%_80%_at_100%_100%,rgb(242_212_122/0.85),transparent_60%),linear-gradient(160deg,#e9e4ff,#fff4e2)] p-4"
-                data-placeholder="founder-photo"
-              >
-                <span aria-hidden="true" class="display text-[3.5rem] leading-none tracking-[-0.06em] text-fg">{initials(f.name)}</span>
-                <span class="font-mono text-[0.625rem] tracking-[0.06em] text-fg-2 uppercase">{c.ui.photoPlaceholder}</span>
+              <div class="flex aspect-[4/5] w-36 flex-col justify-between bg-paper p-3" data-placeholder="founder-photo">
+                <span aria-hidden="true" class="text-[2.25rem] leading-none font-light tracking-[-0.03em] text-muted">{initials(f.name)}</span>
+                <span class="text-[0.75rem] text-muted">{c.ui.photoPlaceholder}</span>
               </div>
             )}
-            <div class="flex flex-col">
-              <p class="eyebrow text-sky-ink">{f.role}</p>
-              <h3 class="display mt-3 text-[1.75rem] leading-[1.1] tracking-[-0.035em]">{f.name}</h3>
-              <p class="mt-4 text-small text-fg-2">{f.bio}</p>
+            <div>
+              <h3 class="text-[1.5rem] leading-tight font-light tracking-[-0.02em] text-ink">{f.name}</h3>
+              <p class="mt-1 text-small text-muted">{f.role}</p>
+              <p class="mt-4 text-ink-2">{f.bio}</p>
             </div>
           </li>
         ))

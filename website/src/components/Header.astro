@@ -9,49 +9,18 @@ const { c } = Astro.props;
 ---
 
 <header id="site-header" class="site-header fixed inset-x-0 top-0 z-50">
-  <div class="container-page">
-    <div class="flex h-(--header-h) items-center justify-between gap-3">
-      <a href="#top" class="flex items-center gap-2.5 text-fg no-underline" data-placeholder="logo">
-        <Logo />
-        <span class="text-[1.0625rem] font-medium tracking-[-0.02em] whitespace-nowrap max-[400px]:sr-only">{c.meta.siteName}</span>
-      </a>
+  <div class="container-page flex h-(--header-h) items-center justify-between gap-4">
+    <a href="#top" class="flex items-center gap-3 text-ink no-underline" data-placeholder="logo">
+      <Logo />
+      <span class="text-[1.125rem] font-medium tracking-[-0.015em] whitespace-nowrap">{c.meta.siteName}</span>
+    </a>
 
-      <nav aria-label={c.ui.primaryNavLabel} class="hidden lg:block">
-        <ul class="flex items-center gap-1">
-          {
-            c.nav.items.map((item) => (
-              <li>
-                <a href={item.href} class="px-4 py-2 text-[0.9375rem] text-fg-2 transition-colors duration-300 hover:text-fg">
-                  {item.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
-
-      <div class="flex items-center gap-2">
-        <button
-          type="button"
-          id="menu-toggle"
-          class="btn btn-sm btn-glass lg:hidden"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-          data-label-open={c.ui.menuOpen}
-          data-label-close={c.ui.menuClose}
-        >
-          {c.ui.menuOpen}
-        </button>
-        <a href={c.nav.cta.href} class="btn btn-sm btn-primary">{c.nav.cta.label}</a>
-      </div>
-    </div>
-
-    <nav id="mobile-menu" aria-label={c.ui.primaryNavLabel} class="hidden border-t border-line pb-4 lg:hidden">
-      <ul class="flex flex-col">
+    <nav aria-label={c.ui.primaryNavLabel} class="hidden lg:block">
+      <ul class="flex items-center gap-9">
         {
           c.nav.items.map((item) => (
             <li>
-              <a href={item.href} class="block border-b border-line py-3.5 text-[1.25rem] font-light tracking-[-0.02em] text-fg">
+              <a href={item.href} class="text-[0.9375rem] text-ink-2 transition-colors hover:text-ink">
                 {item.label}
               </a>
             </li>
@@ -59,39 +28,59 @@ const { c } = Astro.props;
         }
       </ul>
     </nav>
+
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        id="menu-toggle"
+        class="btn btn-sm btn-line lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-label-open={c.ui.menuOpen}
+        data-label-close={c.ui.menuClose}
+      >
+        {c.ui.menuOpen}
+      </button>
+      <a href={c.nav.cta.href} class="btn btn-sm btn-gold max-[380px]:hidden">{c.nav.cta.label}</a>
+    </div>
   </div>
+
+  <nav id="mobile-menu" aria-label={c.ui.primaryNavLabel} class="hidden bg-paper pb-6 lg:hidden">
+    <ul class="container-page flex flex-col gap-1">
+      {
+        c.nav.items.map((item) => (
+          <li>
+            <a href={item.href} class="block py-3 text-[1.5rem] font-light tracking-[-0.02em] text-ink">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
 </header>
 
 <script>
   const header = document.getElementById('site-header');
   const toggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
-
   if (header) {
-    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 12);
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8 || toggle?.getAttribute('aria-expanded') === 'true');
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }
-
-  if (toggle && menu) {
+  if (toggle && menu && header) {
     const setOpen = (open: boolean) => {
       toggle.setAttribute('aria-expanded', String(open));
       toggle.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
       menu.classList.toggle('hidden', !open);
-      header?.classList.toggle('is-scrolled', open || window.scrollY > 12);
+      header.classList.toggle('is-scrolled', open || window.scrollY > 8);
     };
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
-    menu.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a')) setOpen(false);
-    });
+    menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-        setOpen(false);
-        toggle.focus();
-      }
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') { setOpen(false); toggle.focus(); }
     });
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
-      if (e.matches) setOpen(false);
-    });
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
   }
 </script>
