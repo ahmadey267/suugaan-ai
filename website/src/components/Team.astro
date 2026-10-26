@@ -27,10 +27,10 @@ const initials = (name: string) =>
         c.team.founders.map((f, i) => (
           <li class="glass glass-hover grid gap-6 p-5 sm:grid-cols-[11rem_1fr] sm:p-6 lg:grid-cols-[13rem_1fr] lg:gap-8" data-reveal style={`--reveal-i:${i}`}>
             {f.photo ? (
-              <img src={f.photo} alt={f.name} width="416" height="520" loading="lazy" decoding="async" class="aspect-[4/5] w-full max-w-[13rem] rounded-[12px] object-cover" />
+              <img src={f.photo} alt={f.name} width="416" height="520" loading="lazy" decoding="async" class="aspect-[4/5] w-full max-w-[13rem] object-cover" />
             ) : (
               <div
-                class="relative flex aspect-[4/5] w-full max-w-[13rem] flex-col justify-between overflow-hidden rounded-[12px] bg-[radial-gradient(120%_90%_at_10%_0%,rgb(142_197_255/0.9),transparent_60%),radial-gradient(90%_80%_at_100%_100%,rgb(242_212_122/0.85),transparent_60%),linear-gradient(160deg,#e9e4ff,#fff4e2)] p-4 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.8)]"
+                class="relative flex aspect-[4/5] w-full max-w-[13rem] flex-col justify-between overflow-hidden bg-[radial-gradient(120%_90%_at_10%_0%,rgb(142_197_255/0.9),transparent_60%),radial-gradient(90%_80%_at_100%_100%,rgb(242_212_122/0.85),transparent_60%),linear-gradient(160deg,#e9e4ff,#fff4e2)] p-4"
                 data-placeholder="founder-photo"
               >
                 <span aria-hidden="true" class="display text-[3.5rem] leading-none tracking-[-0.06em] text-fg">{initials(f.name)}</span>

@@ -18,11 +18,11 @@ const { c } = Astro.props;
     <ol class="mt-14 grid gap-4 md:grid-cols-3 lg:mt-20">
       {
         c.approach.principles.map((p, i) => (
-          <li class="glass glass-hover flex min-h-[20rem] flex-col p-7 lg:p-9" data-reveal style={`--reveal-i:${i}`}>
+          <li class="glass glass-hover flex flex-col p-7 lg:p-9" data-reveal style={`--reveal-i:${i}`}>
             <span class="display text-gradient text-[4rem] leading-none tracking-[-0.06em]" aria-hidden="true">
               0{i + 1}
             </span>
-            <h3 class="display mt-auto pt-12 text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-[1.08] tracking-[-0.035em]">{p.title}</h3>
+            <h3 class="display mt-10 text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-[1.08] tracking-[-0.035em]">{p.title}</h3>
             <p class="mt-4 text-fg-2">{p.body}</p>
           </li>
         ))
