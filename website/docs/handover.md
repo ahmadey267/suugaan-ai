@@ -4,7 +4,7 @@ The marketing site for Sugan AI. One static page, nine sections, built with Astr
 
 ## Design direction
 
-The live design is direction C, chosen by Ahmed from three hero mockups: a dark lab look with light Outfit display type, and the Somali Latin alphabet set as a waveform in the hero (one bar per letter, gold for sounds English does not have; bar heights are decorative, not measured audio). It replaces the light editorial direction in `design-spec.md`, which is kept as the record of the original research. Tokens for the current design are at the top of `src/styles/global.css`.
+The live design is direction D, chosen by Ahmed: a warm white page with film grain, frosted glass panels and a floating glass header, lit by soft colour fields drawn from the Somali flag blue and Sugan gold. The alphabet waveform from direction C stays as the hero signature, now on a glass panel, and the problem section shows the counted composition of the largest public English-Somali dataset as a proportional bar. Earlier directions are recorded in `design-spec.md` and the git history. Tokens are at the top of `src/styles/global.css`.
 
 ## 1. Run it locally
 
@@ -109,7 +109,7 @@ Checked on the Cloudflare local runtime (`wrangler pages dev`) with Chromium.
 
 | Check | Result |
 | --- | --- |
-| Lighthouse, mobile | Performance 99, Accessibility 100, Best Practices 100, SEO 100. LCP 2.0s, CLS 0 (local static server without compression) |
+| Lighthouse, mobile | Performance 98, Accessibility 100, Best Practices 100, SEO 100. LCP 2.1s, TBT 0ms, CLS 0 (local static server without compression) |
 | Lighthouse, desktop | 100, 100, 100, 100. LCP 0.5s, CLS 0 |
 | Widths 360, 768, 1280, 1440 | No horizontal scroll, every section checked visually |
 | Keyboard | Skip link is the first tab stop, visible focus everywhere, menu opens and closes with Escape and returns focus |

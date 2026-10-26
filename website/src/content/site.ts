@@ -59,6 +59,8 @@ export interface SiteContent {
   };
   hero: {
     headline: string;
+    /** Part of the headline set in the gradient. Must appear in headline exactly. */
+    headlineAccent: string;
     supporting: string;
     primary: { label: string; href: string };
     secondary: { label: string };
@@ -76,6 +78,14 @@ export interface SiteContent {
     /** addressedBy lists building block titles (from build.blocks) that answer each gap. */
     gaps: (Item & { addressedBy: string[] })[];
     columns: [string, string, string];
+    /** Composition of the largest public English-Somali dataset, as counted. Parts must sum to total. */
+    dataset: {
+      title: string;
+      totalLabel: string;
+      total: number;
+      highlight: string;
+      parts: { label: string; value: number; scripture: boolean }[];
+    };
   };
   build: {
     eyebrow: string;
@@ -197,6 +207,7 @@ const en: SiteContent = {
   },
   hero: {
     headline: 'The Somali internet starts here.',
+    headlineAccent: 'Somali internet',
     supporting:
       'More than 20 million people speak Somali. The machines that translate the world into other languages have treated it as a footnote, trained on scripture and evaluated against nothing. Sugan AI builds the datasets, models and benchmarks that fix that.',
     primary: { label: 'Partner with us', href: '#partner' },
@@ -209,7 +220,7 @@ const en: SiteContent = {
       { label: 'Voice', phase: 3 },
     ],
     alphabetLabel: 'The Somali Latin alphabet: 21 consonants and 5 vowels, each shown with its sound.',
-    alphabetCaption: 'The Somali Latin alphabet, set as a waveform. Gold letters are sounds English does not have.',
+    alphabetCaption: 'The Somali Latin alphabet, set as a waveform. Highlighted letters are sounds English does not have.',
     alphabetSummary: '26 letters · 21 consonants · 5 vowels',
   },
   problem: {
@@ -217,6 +228,17 @@ const en: SiteContent = {
     heading: 'Somali AI is broken, and the reason is sitting in plain sight.',
     body: 'The largest public English-Somali dataset holds 161,865 sentence pairs. We counted what is in it: 93,844 Qur\'an verses, 62,195 Bible verses, and 5,826 of everything else. Ninety-six percent scripture. Train on that and you get a model that renders a rental notice in the cadence of a sacred text. The datasets get cited, the models get published, the scores look fine. Nobody opens the file.',
     columns: ['Gap', 'What goes wrong', 'What we build'],
+    dataset: {
+      title: 'The largest public English-Somali dataset',
+      totalLabel: 'sentence pairs',
+      total: 161865,
+      highlight: '96% scripture',
+      parts: [
+        { label: "Qur'an verses", value: 93844, scripture: true },
+        { label: 'Bible verses', value: 62195, scripture: true },
+        { label: 'Everything else', value: 5826, scripture: false },
+      ],
+    },
     gaps: [
       {
         title: 'Data.',

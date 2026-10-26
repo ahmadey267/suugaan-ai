@@ -20,13 +20,17 @@ const voiceBars = Array.from({ length: 64 }, (_, i) => amp(i));
 const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
 ---
 
-<section id="build" aria-labelledby="build-heading" class="section-pad">
-  <div class="container-page">
+<section id="build" aria-labelledby="build-heading" class="relative section-pad">
+  <div class="aura-field" aria-hidden="true">
+    <div class="aura aura-gold top-[20%] right-[-160px] h-[560px] w-[640px] opacity-45!"></div>
+    <div class="aura aura-sky bottom-[10%] left-[-200px] h-[520px] w-[620px] opacity-45!"></div>
+  </div>
+  <div class="container-page relative">
     <SectionHeading eyebrow={c.build.eyebrow} heading={c.build.heading} headingId="build-heading" />
 
     <ul class="mt-16 grid gap-4 lg:mt-24 lg:grid-cols-12">
       <!-- Data: tall card with the corpus structure -->
-      <li id={slug(data.title)} class="card card-hover flex min-w-0 flex-col p-6 lg:col-span-5 lg:row-span-2 lg:p-8" data-reveal>
+      <li id={slug(data.title)} class="glass glass-hover flex min-w-0 flex-col p-6 lg:col-span-5 lg:row-span-2 lg:p-8" data-reveal>
         <div class="flex items-center justify-between gap-3">
           <h3 class="display text-h3">{data.title}</h3>
           <StatusPill status={statusFor(data.title)} label={c.ui.statusLabels[statusFor(data.title)]} />
@@ -41,13 +45,13 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
             </p>
           ))}
           <p class="mt-4 flex flex-wrap gap-1.5">
-            {c.build.dataTags.map((t) => <span class="rounded-full bg-gold-soft px-2.5 py-0.5 text-gold-2">{t}</span>)}
+            {c.build.dataTags.map((t) => <span class="rounded-full bg-sky-soft px-2.5 py-0.5 text-sky-ink">{t}</span>)}
           </p>
         </div>
       </li>
 
       <!-- Models -->
-      <li id={slug(models.title)} class="card card-hover grid min-w-0 gap-6 p-6 sm:grid-cols-2 lg:col-span-7 lg:p-8" data-reveal style="--reveal-i:1">
+      <li id={slug(models.title)} class="glass glass-hover grid min-w-0 gap-6 p-6 sm:grid-cols-2 lg:col-span-7 lg:p-8" data-reveal style="--reveal-i:1">
         <div>
           <div class="flex items-center gap-3">
             <h3 class="display text-h3">{models.title}</h3>
@@ -58,7 +62,7 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
         <ul class="well grid content-start gap-px overflow-hidden p-1 font-mono text-code" aria-hidden="true">
           {models.detail.map((d) => (
             <li class="flex items-center gap-3 rounded-md px-3 py-2.5 text-fg-2">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.25" stroke="rgb(201 162 39 / 0.5)" /><path d="M4.2 7.3 6.1 9.1 9.9 5" stroke="#E7C55A" stroke-width="1.4" /></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgb(65 137 221 / 0.14)" /><path d="M4.8 8.3 7 10.4l4.3-4.6" stroke="#2A64B0" stroke-width="1.5" /></svg>
               {d}
             </li>
           ))}
@@ -66,7 +70,7 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
       </li>
 
       <!-- Benchmark -->
-      <li id={slug(bench.title)} class="card card-hover grid min-w-0 gap-6 p-6 sm:grid-cols-[1fr_1.15fr] lg:col-span-7 lg:p-8" data-reveal style="--reveal-i:2">
+      <li id={slug(bench.title)} class="glass glass-hover grid min-w-0 gap-6 p-6 sm:grid-cols-[1fr_1.15fr] lg:col-span-7 lg:p-8" data-reveal style="--reveal-i:2">
         <div>
           <div class="flex items-center gap-3">
             <h3 class="display text-h3">{bench.title}</h3>
@@ -85,8 +89,8 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
               {bench.detail.map((d) => (
                 <tr class="border-t border-line">
                   <td class="py-2.5 pr-3 whitespace-nowrap text-fg-2">{d}</td>
-                  <td class="py-2.5 text-right"><span class="inline-block h-1.5 w-10 rounded-full bg-line-strong" /></td>
-                  <td class="py-2.5 text-right"><span class="inline-block h-1.5 w-10 rounded-full bg-line-strong" /></td>
+                  <td class="py-2.5 text-right"><span class="inline-block h-1.5 w-10 rounded-full bg-[rgb(14_17_23/0.1)]" /></td>
+                  <td class="py-2.5 text-right"><span class="inline-block h-1.5 w-10 rounded-full bg-[rgb(14_17_23/0.1)]" /></td>
                 </tr>
               ))}
             </tbody>
@@ -96,7 +100,7 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
       </li>
 
       <!-- Voice: full width -->
-      <li id={slug(voice.title)} class="card card-hover grid min-w-0 gap-6 overflow-hidden p-6 lg:col-span-12 lg:grid-cols-12 lg:items-center lg:p-8" data-reveal style="--reveal-i:3">
+      <li id={slug(voice.title)} class="glass glass-hover grid min-w-0 gap-6 overflow-hidden p-6 lg:col-span-12 lg:grid-cols-12 lg:items-center lg:p-8" data-reveal style="--reveal-i:3">
         <div class="lg:col-span-4">
           <div class="flex items-center gap-3">
             <h3 class="display text-h3">{voice.title}</h3>
@@ -106,14 +110,14 @@ const [first, ...rest] = c.build.closing.split(/(?<=\.)\s+/);
         </div>
         <div class="flex h-24 items-center justify-between gap-[3px] lg:col-span-8 lg:h-28" aria-hidden="true">
           {voiceBars.map((a) => (
-            <span class="w-[3px] shrink-0 rounded-full bg-[rgb(243_241_234/0.18)]" style={`height:${Math.round(a * 100)}%`} />
+            <span class="w-[3px] shrink-0 rounded-full bg-[linear-gradient(180deg,rgb(65_137_221/0.45),rgb(106_85_214/0.35))]" style={`height:${Math.round(a * 100)}%`} />
           ))}
         </div>
       </li>
     </ul>
 
     <p class="display mt-20 flex max-w-[30ch] gap-5 text-[clamp(1.75rem,1.2rem+2.2vw,3rem)] leading-[1.08] tracking-[-0.04em] text-fg lg:mt-28" data-reveal>
-      <span class="text-gold-2" aria-hidden="true">→</span>
+      <span class="text-gradient" aria-hidden="true">→</span>
       <span>{first} <span class="text-dim">{rest.join(' ')}</span></span>
     </p>
 
